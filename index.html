@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="攻殻機動隊">
+<title>スマスロ 攻殻機動隊 設定判別</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overscroll-behavior:none}
+body{background:#04070d;color:#dbe6ee;font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN',sans-serif;font-size:14px;-webkit-font-smoothing:antialiased}
+button{touch-action:manipulation;font-family:inherit;cursor:pointer;border:none;outline:none;color:inherit}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
+input[type=number]{-moz-appearance:textfield}
+
+#W{max-width:520px;margin:0 auto;display:flex;flex-direction:column;height:100vh;height:100dvh;padding-top:env(safe-area-inset-top,0px)}
+
+/* Header — 攻殻=電脳/サイバーパンク。ティール×マゼンタのネオン */
+#hdr{background:rgba(6,11,18,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:11px 14px 7px;border-bottom:1px solid rgba(0,229,200,.18);flex-shrink:0}
+.hr{display:flex;align-items:center;justify-content:space-between}
+.ht{font-size:15px;font-weight:900;background:linear-gradient(105deg,#00E5C8,#5BC8FF 55%,#FF3D7F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:.5px}
+.hs{font-size:9.5px;color:rgba(255,255,255,.32);margin-top:2px;letter-spacing:.3px}
+.hb{padding:5px 11px;border-radius:8px;font-size:11px;font-weight:700;background:rgba(255,61,127,.08);border:1px solid rgba(255,61,127,.22);color:#ff7da6}
+.hb.p{background:rgba(255,61,127,.16);border-color:rgba(255,61,127,.45);color:#ff5c93}
+.cfm{margin-top:6px;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:700;backdrop-filter:blur(10px)}
+
+/* Quick stats strip */
+.qs{display:flex;gap:5px;flex-wrap:wrap;padding:6px 14px;background:rgba(5,9,15,.95);border-bottom:1px solid rgba(255,255,255,.04);font-size:10px;flex-shrink:0}
+.qc{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:7px;padding:4px 8px;flex:1;min-width:0;text-align:center}
+.qc .l{color:rgba(255,255,255,.52);font-size:9px;display:block;margin-bottom:1px}
+.qc .v{color:#00E5C8;font-weight:700;font-size:12px;font-family:'SF Mono',ui-monospace,monospace}
+.qc .v.s{font-size:11px}
+.qc .v2{color:rgba(255,255,255,.45);font-size:9px}
+
+/* Body scroll */
+#bd{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px 90px}
+
+/* Tabs */
+#tb{display:flex;background:rgba(6,11,18,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(0,229,200,.14);flex-shrink:0;padding-bottom:env(safe-area-inset-bottom,0px)}
+.tab{flex:1;padding:9px 2px 8px;text-align:center;font-size:10px;font-weight:700;color:rgba(255,255,255,.34);position:relative;transition:color .15s}
+.tab.on{color:#00E5C8}
+.tab.on::before{content:"";position:absolute;top:0;left:22%;right:22%;height:2px;background:linear-gradient(90deg,#00E5C8,#FF3D7F);border-radius:0 0 3px 3px}
+.tab .ic{font-size:17px;display:block;margin-bottom:2px;line-height:1}
+
+/* Cards */
+.card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:13px;padding:12px;margin-bottom:10px}
+.card.glow{border-color:rgba(0,229,200,.22);box-shadow:0 0 0 1px rgba(0,229,200,.05),0 4px 24px rgba(0,229,200,.04)}
+.ct{font-size:12px;font-weight:800;color:#7fe9dc;margin-bottom:9px;letter-spacing:.4px;display:flex;align-items:center;gap:6px}
+.ct .tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px;background:rgba(255,61,127,.12);color:#ff7da6;border:1px solid rgba(255,61,127,.2)}
+.ct .tag.b{background:rgba(0,229,200,.1);color:#5fe6d6;border-color:rgba(0,229,200,.2)}
+.sub{font-size:10px;color:rgba(255,255,255,.52);margin:-4px 0 8px;line-height:1.55}
+
+/* Event grid */
+.eg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.egrp{margin-bottom:9px}
+.egrp:last-child{margin-bottom:0}
+.egrp-h{display:block;font-size:10px;font-weight:700;color:rgba(127,233,220,.7);margin-bottom:5px;letter-spacing:.5px}
+.eb{padding:12px 4px;border-radius:11px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);font-size:11.5px;font-weight:700;color:rgba(255,255,255,.82);transition:all .12s;text-align:center;line-height:1.3;position:relative}
+.eb:active{transform:scale(.94)}
+.eb-normal{border-left:3px solid rgba(0,229,200,.55);background:linear-gradient(100deg,rgba(0,229,200,.07),rgba(255,255,255,.03))}
+.eb-at{border-left:3px solid rgba(167,139,250,.6);background:linear-gradient(100deg,rgba(167,139,250,.08),rgba(255,255,255,.03))}
+.eb-other{border-left:3px solid rgba(255,255,255,.25);background:linear-gradient(100deg,rgba(255,255,255,.05),rgba(255,255,255,.02))}
+.eb.on{background:linear-gradient(135deg,rgba(0,229,200,.28),rgba(91,200,255,.16));border-color:rgba(0,229,200,.65);border-left-color:rgba(0,229,200,.9);color:#d6fff8;box-shadow:0 0 18px rgba(0,229,200,.2)}
+.eb .es{display:block;font-size:9px;color:rgba(255,255,255,.42);font-weight:600;margin-top:2px}
+.eb.on .es{color:rgba(214,255,248,.72)}
+.eb-at.on{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(255,61,127,.16));border-color:rgba(167,139,250,.7);border-left-color:rgba(167,139,250,.95);color:#efe6ff;box-shadow:0 0 18px rgba(167,139,250,.2)}
+
+/* Segmented choice */
+.seg{display:flex;gap:5px;flex-wrap:wrap}
+.so{flex:1;min-width:60px;padding:10px 4px;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);font-size:11px;font-weight:700;color:rgba(255,255,255,.72);text-align:center;transition:all .12s}
+.so:active{transform:scale(.95)}
+.seg-c .so{min-width:0;padding:9px 2px;font-size:11px}
+.so.on{background:rgba(0,229,200,.22);border-color:rgba(0,229,200,.6);color:#d6fff8;box-shadow:0 0 12px rgba(0,229,200,.15)}
+.so.win.on{background:rgba(91,255,160,.2);border-color:rgba(91,255,160,.55);color:#c8ffd9;box-shadow:0 0 12px rgba(91,255,160,.15)}
+.so.lose.on{background:rgba(255,90,120,.18);border-color:rgba(255,90,120,.5);color:#ffc2ce}
+/* マス色・期待度の意味色（選択時に対応色で光る） */
+.so.c-ao.on{background:rgba(91,160,255,.22);border-color:rgba(91,160,255,.6);color:#cfe0ff;box-shadow:0 0 12px rgba(91,160,255,.18)}
+.so.c-midori.on{background:rgba(91,255,160,.2);border-color:rgba(91,255,160,.55);color:#c8ffd9;box-shadow:0 0 12px rgba(91,255,160,.15)}
+.so.c-aka.on{background:rgba(255,90,90,.22);border-color:rgba(255,90,90,.6);color:#ffc9c9;box-shadow:0 0 12px rgba(255,90,90,.18)}
+.so.c-kin.on{background:rgba(255,200,60,.24);border-color:rgba(255,200,60,.65);color:#ffe9a8;box-shadow:0 0 14px rgba(255,200,60,.2)}
+.so.c-niji.on{background:linear-gradient(100deg,rgba(255,90,160,.25),rgba(120,160,255,.22));border-color:rgba(255,150,200,.7);color:#fff;box-shadow:0 0 16px rgba(255,120,180,.25)}
+
+/* Field */
+.fld{margin-top:10px}
+.fl{font-size:11px;color:rgba(255,255,255,.64);margin-bottom:5px;font-weight:600}
+.gi{display:flex;align-items:center;gap:8px}
+.gi input{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:11px 13px;color:#eaf6f3;font-size:16px;font-weight:700;font-family:'SF Mono',ui-monospace,monospace;outline:none}
+.gi input:focus{border-color:rgba(0,229,200,.5)}
+.gstep{display:flex;gap:5px}
+.gstep button{width:42px;height:44px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);font-size:13px;font-weight:700;color:#9fe9dd}
+.gstep button:active{background:rgba(0,229,200,.18)}
+
+textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:10px;color:#eaf6f3;font-size:13px;outline:none;resize:none;font-family:inherit}
+textarea:focus{border-color:rgba(0,229,200,.4)}
+
+.addb{width:100%;margin-top:12px;padding:14px;border-radius:12px;background:linear-gradient(135deg,#00B89E,#0090C8);color:#02110e;font-size:14px;font-weight:900;letter-spacing:1px;box-shadow:0 4px 18px rgba(0,184,158,.25)}
+.addb:active{transform:scale(.98);opacity:.92}
+.addb:disabled{opacity:.3;box-shadow:none}
+/* リセット確認モーダル */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px}
+.modal-card{background:#12121c;border:1px solid rgba(255,90,120,.3);border-radius:16px;padding:22px 20px;max-width:340px;width:100%;box-shadow:0 12px 48px rgba(0,0,0,.6)}
+.modal-t{font-size:16px;font-weight:900;color:#ff8da3;margin-bottom:8px}
+.modal-m{font-size:12px;color:rgba(255,255,255,.7);line-height:1.6;margin-bottom:18px}
+.modal-btns{display:flex;gap:10px}
+.modal-cancel,.modal-ok{flex:1;padding:13px;border-radius:11px;font-size:13px;font-weight:800;transition:transform .08s}
+.modal-cancel{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.85)}
+.modal-ok{background:linear-gradient(135deg,#ff5a78,#ff3d6e);border:none;color:#fff;box-shadow:0 4px 16px rgba(255,61,110,.3)}
+.modal-cancel:active,.modal-ok:active{transform:scale(.96)}
+
+/* Counter rows */
+.crow{display:flex;align-items:center;gap:8px;padding:9px 8px;border-bottom:1px solid rgba(255,255,255,.05);border-radius:8px;transition:background .15s}
+.crow.active{background:rgba(0,229,200,.07);border-left:3px solid rgba(0,229,200,.5);padding-left:8px}
+.crow:last-child{border-bottom:none}
+.cval.hot{background:rgba(0,229,200,.18);border-color:rgba(0,229,200,.45);color:#aef5ec}
+.cinfo{flex:1;min-width:0}
+.cnm{font-size:12.5px;font-weight:700;color:rgba(255,255,255,.82)}
+.chint{font-size:9.5px;color:rgba(255,255,255,.35);margin-top:1px;line-height:1.4}
+.cbadge{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;margin-top:2px}
+.cw{display:flex;align-items:center;gap:5px}
+.cmin,.cplus{width:36px;height:36px;border-radius:9px;font-size:19px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:transform .08s}
+.cmin{background:rgba(255,90,120,.09);border:1px solid rgba(255,90,120,.16);color:#ff8da3}
+.cplus{background:rgba(0,229,200,.08);border:1px solid rgba(0,229,200,.16);color:#7fe9dc}
+.cmin:active,.cplus:active{transform:scale(.86)}
+.cval{min-width:34px;height:36px;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#eaf6f3;font-family:'SF Mono',ui-monospace,monospace;padding:0 5px}
+
+/* Computed boxes */
+.calc{margin-top:9px;padding:9px 11px;border-radius:11px;background:rgba(0,229,200,.04);border:1px solid rgba(0,229,200,.1);font-size:11px}
+.calc-t{color:#7fe9dc;font-weight:800;margin-bottom:4px;font-size:11.5px}
+.calc-l{color:rgba(255,255,255,.6);margin-top:3px;line-height:1.5}
+.calc-hl{color:#FFD66B;font-weight:800}
+.calc-sub{color:rgba(255,255,255,.3);margin-top:3px;font-size:9.5px;line-height:1.5}
+
+/* setting bar */
+.sbar{display:flex;align-items:center;gap:7px;margin-top:5px}
+.sbar .sl{width:30px;font-size:10px;color:rgba(255,255,255,.45);font-weight:700;flex-shrink:0}
+.sbar .st{flex:1;height:13px;background:rgba(255,255,255,.05);border-radius:7px;overflow:hidden;position:relative}
+.sbar .sf{height:100%;border-radius:7px;background:linear-gradient(90deg,#0090C8,#00E5C8)}
+.sbar .sv{width:48px;font-size:10px;color:rgba(255,255,255,.6);font-weight:700;text-align:right;flex-shrink:0;font-family:'SF Mono',ui-monospace,monospace}
+.sbar.best .sf{background:linear-gradient(90deg,#FF8A00,#FFD66B)}
+.sbar.best .sv{color:#FFD66B}
+
+/* info / strategy blocks */
+.ib{margin-bottom:9px;padding:10px 12px;border-radius:11px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06)}
+.ib-h{font-size:12px;font-weight:800;color:#7fe9dc;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.ib-h .n{font-size:9px;font-weight:800;color:#04070d;background:#00E5C8;border-radius:4px;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.ib p{font-size:11.5px;color:rgba(255,255,255,.62);line-height:1.65;margin:3px 0}
+.ib .em{color:#FFD66B;font-weight:700}
+.ib .em2{color:#5fe6d6;font-weight:700}
+.ib .em3{color:#ff7da6;font-weight:700}
+.itbl{width:100%;border-collapse:collapse;margin:6px 0;font-size:11px}
+.itbl th{background:rgba(0,229,200,.08);color:#7fe9dc;padding:5px 6px;text-align:center;font-weight:700;border:1px solid rgba(255,255,255,.06)}
+.itbl td{padding:5px 6px;text-align:center;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.05)}
+.itbl td.h{color:#FFD66B;font-weight:700}
+.itbl td.k{color:rgba(255,255,255,.78);font-weight:600;text-align:left}
+
+/* timeline */
+.tl-empty{text-align:center;color:rgba(255,255,255,.25);padding:40px 0;font-size:12px}
+.tli{display:flex;gap:9px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.tli-i{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:rgba(255,255,255,.05)}
+.tli-b{flex:1;min-width:0}
+.tli-t{font-size:12px;font-weight:700;color:rgba(255,255,255,.82)}
+.tli-s{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;line-height:1.45}
+.tli-x{color:rgba(255,90,120,.5);font-size:18px;padding:0 4px;align-self:center}
+.tli-g{font-size:11px;color:#7fe9dc;font-weight:700;font-family:'SF Mono',ui-monospace,monospace;flex-shrink:0}
+
+.exp-ta{width:100%;min-height:280px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px;color:#9fd8d0;font-size:11px;font-family:'SF Mono',ui-monospace,monospace;white-space:pre-wrap;resize:none;outline:none;-webkit-user-select:all;user-select:all}
+.btn2{display:flex;gap:8px;margin-top:10px}
+.btn2 button{flex:1;padding:12px;border-radius:11px;font-size:12px;font-weight:700}
+.bcopy{background:rgba(0,229,200,.12);border:1px solid rgba(0,229,200,.3);color:#7fe9dc}
+.brst{background:rgba(255,90,120,.1);border:1px solid rgba(255,90,120,.28);color:#ff8da3}
+.bcopy:active,.brst:active{transform:scale(.97)}
+.note{font-size:9.5px;color:rgba(255,255,255,.28);text-align:center;margin-top:14px;line-height:1.6}
+.hl-row{display:flex;gap:6px;margin-bottom:6px}
+.hl-row .so{min-width:0}
+</style>
+</head>
+<body>
+<div id="W">
+<div id="hdr">
+<div class="hr">
+<div><div class="ht">攻殻機動隊 GHOST IN THE SHELL</div><div class="hs">スマスロ 設定判別 ＆ 実戦ナビ</div></div>
+<div style="display:flex;gap:6px;align-items:center">
+<button class="hb" id="setBtn">設定 ?</button>
+<button class="hb" id="resetBtn" data-a="reset" style="background:rgba(255,90,120,.1);border-color:rgba(255,90,120,.28);color:#ff8da3">リセット</button>
+</div>
+</div>
+<div id="confirmMsg"></div>
+</div>
+<div class="qs" id="qs"></div>
+<div id="bd"></div>
+<div id="tb">
+<div class="tab on" data-tab="rec"><span class="ic">✍️</span>記録</div>
+<div class="tab" data-tab="cnt"><span class="ic">🔢</span>カウンター</div>
+<div class="tab" data-tab="nav"><span class="ic">🧭</span>攻略</div>
+<div class="tab" data-tab="log"><span class="ic">📜</span>履歴</div>
+<div class="tab" data-tab="info"><span class="ic">💡</span>示唆</div>
+<div class="tab" data-tab="exp"><span class="ic">📤</span>出力</div>
+</div>
+</div>
+<div id="resetModal" class="modal-bg" style="display:none">
+<div class="modal-card">
+<div class="modal-t">全データをリセット</div>
+<div class="modal-m">記録・カウンター・履歴をすべて削除します。<br>この操作は取り消せません。</div>
+<div class="modal-btns">
+<button class="modal-cancel" data-a="reset-cancel">キャンセル</button>
+<button class="modal-ok" data-a="reset-confirm">削除する</button>
+</div>
+</div>
+</div>
+<script>
+'use strict';
+/* ============ スマスロ 攻殻機動隊 設定判別＆実戦ツール ============
+   データ出典：なな徹 / 一撃 / DMMぱちタウン / ちょんぼりすた 等を照合（2026年）
+   ※公開解析準拠。実戦値・調査中項目あり。 */
+
+var SK = 'kokaku1'; // localStorageキー接頭辞
+
+/* ---- 設定差データ（全6段階） ---- */
+// CZ出現率（分母）
+var CZ_RATE = [238.0, 236.3, 231.7, 220.9, 214.0, 210.1];
+// AT初当り（分母）
+var AT_RATE = [336.3, 332.0, 319.6, 298.7, 285.8, 278.0];
+// 機械割
+var KW = [97.5, 98.8, 101.6, 104.9, 108.5, 112.2]; // 公表近似
+// 200G/400G タチコマの家出 当選率(%)
+var TACHI = [30.0, 32.9, 37.5, 41.7, 45.8, 48.3];
+// 設定変更時・AT終了後 超高確移行率(%)
+var CHOU = [2.5, 2.9, 3.3, 3.8, 4.2, 4.6];
+// S.A.M.視覚フラグ保有率(%)
+var SIKAKU = [5.7, 6.1, 6.9, 9.0, 10.1, 10.6];
+// 引き戻しストック当選率(%)
+var STOCK = [3.3, 4.6, 5.8, 7.1, 8.3, 9.6];
+// 殲滅ゾーン マス色別 CZ以上当選率(%)（出典画像準拠）
+var ZONE_BLUE  = [3.8, 3.8, 4.6, 5.4, 7.5, 9.6];   // 青マス（設1=設2）
+var ZONE_GREEN = [20.0, 20.4, 22.1, 25.1, 27.5, 30.4]; // 緑マス
+var ZONE_RED   = [55.0, 55.4, 56.7, 58.5, 60.4, 61.7]; // 赤マス
+// CZ失敗後 モード移行率(%)（サミー公式 develop-voice 準拠）
+var MODE_A = [50.0, 48.7, 42.5, 37.5, 26.2, 20.0]; // 通常A（設1偏り）
+var MODE_B = [20.0, 21.3, 22.5, 22.5, 23.8, 25.0]; // 通常B
+var MODE_C = [15.0, 15.0, 17.5, 20.0, 22.5, 25.0]; // 通常C
+var MODE_D = [15.0, 15.0, 17.5, 20.0, 27.5, 30.0]; // 通常D（設6偏り）
+
+/* ---- 状態 ---- */
+var CC = {}; // カウンター値
+var LOG = [];
+var inAT = false;
+// 記録タブの一時入力
+var cur = { ev:'', g:'', res:'', cztrig:'', tachi:'', note:'', endscr:'', czscr:'', edp:'', stk:'', kill:'', ztable:'', zchance:'', samstage:'', tachipt:'', s9mep:'', sam:'' };
+var curTab = 'rec';
+
+/* ---- ユーティリティ ---- */
+function $(s,r){return (r||document).querySelector(s);}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function clamp(n,a,b){return Math.max(a,Math.min(b,n));}
+
+function save(){
+  try{
+    localStorage.setItem(SK+'c', JSON.stringify(CC));
+    localStorage.setItem(SK+'l', JSON.stringify(LOG));
+    localStorage.setItem(SK+'s', JSON.stringify({inAT:inAT}));
+  }catch(e){}
+}
+function load(){
+  try{
+    CC = JSON.parse(localStorage.getItem(SK+'c')||'{}')||{};
+    LOG = JSON.parse(localStorage.getItem(SK+'l')||'[]')||[];
+    var s = JSON.parse(localStorage.getItem(SK+'s')||'{}')||{};
+    inAT = !!s.inAT;
+  }catch(e){ CC={};LOG=[];inAT=false; }
+}
+function cc(k){ return CC[k]||0; }
+function inc(k,d){ CC[k]=Math.max(0,(CC[k]||0)+d); save(); render(); }
+
+/* ---- 統計集計 ---- */
+function stats(){
+  var totG=0, czN=0, czNs=0, atTotal=0, tachiHit=0, tachiTry=0, hackLog=0;
+  var czFail=0, s9mTotal=0, s9mFail=0, dennoEnd=0, zoneN=0;
+  // 殲滅ゾーン マス色別 [青,緑,赤] の試行/当選
+  var zTry=[0,0,0], zHit=[0,0,0];
+  // 高確/超高確スタート [設定変更, AT後] それぞれ {total, kou, chou}
+  var chouVar={total:0,kou:0,chou:0}, chouAt={total:0,kou:0,chou:0};
+  // CZ後モード [A,B,C,D]
+  var modeCnt=[0,0,0,0];
+  // ログから累積G・CZ・AT・タチコマ集計
+  for(var i=0;i<LOG.length;i++){
+    var e=LOG[i];
+    if(typeof e.g==='number' && e.g>0) totG+=e.g;
+    if(e.ev==='cz'){
+      var isTachiTrial = (e.cztrig==='g200'||e.cztrig==='g400');
+      if(isTachiTrial){
+        // 200/400Gタチコマ抽選：到達回数=分母、発展=当選
+        tachiTry++;
+        if(e.res==='s'||e.tachi==='hit'){
+          tachiHit++;
+          // 発展はCZ(タチコマ)突入なのでCZ母数にも算入
+          czN++; czNs++;
+        }
+        // スルー(res='f')はCZ母数にもHACK分母にも入れない
+      }else{
+        // 通常時CZ等（確定/天井保証は推測母数から除外）
+        if(e.cztrig!=='kakutei' && e.cztrig!=='hosyou'){ czN++; if(e.res==='s')czNs++; }
+        if(e.res==='f') czFail++;
+      }
+    }
+    if(e.ev==='at') atTotal++;
+    if(e.ev==='hack') hackLog++;
+    if(e.ev==='s9m'){ s9mTotal++; if(e.res==='f') s9mFail++; }
+    if(e.ev==='denno') dennoEnd++;
+    if(e.ev==='zone'){
+      zoneN++;
+      var ci={blue:0,green:1,red:2}[e.tachi];
+      if(ci!=null){ zTry[ci]++; if(e.res==='s') zHit[ci]++; }
+    }
+    if(e.ev==='chou'){
+      var bucket = (e.cztrig==='atend') ? chouAt : chouVar;
+      bucket.total++;
+      if(e.res==='kou') bucket.kou++;
+      else if(e.res==='chou') bucket.chou++;
+    }
+    if(e.ev==='czmode'){
+      var mi={a:0,b:1,c:2,d:3}[e.res];
+      if(mi!=null) modeCnt[mi]++;
+    }
+  }
+  // カウンター由来の追加母数
+  var czCnt = cc('cz_normal'), atCnt = cc('at_total');
+  var tH = cc('tachi_hit'), tT = cc('tachi_try');
+  var samVis = cc('sam_visual'), samFail = cc('sam_fail');
+  var stkHit = cc('stock_hit'), stkTry = cc('stock_try');
+  var chouHit = cc('chou_hit'), chouTry = cc('chou_try');
+
+  var czTotalN = czN + czCnt;
+  var atTotalN = atTotal + atCnt;
+  // 視覚HACK：分子=HACK発生、分母=CZ失敗+S9M失敗+電脳MODE終了
+  var hackN = samVis + hackLog;
+  var hackDenom = czFail + s9mFail + dennoEnd;
+  return {
+    totG:totG,
+    czN:czTotalN,
+    atN:atTotalN,
+    tachiHit:tachiHit+tH, tachiTry:tachiTry+tT,
+    samVis:hackN, samFail:samFail,
+    stkHit:stkHit, stkTry:stkTry,
+    chouHit:chouHit, chouTry:chouTry,
+    czFail:czFail, s9mTotal:s9mTotal, s9mFail:s9mFail, dennoEnd:dennoEnd,
+    hackN:hackN, hackDenom:hackDenom,
+    zTry:zTry, zHit:zHit, zoneN:zoneN,
+    chouVar:chouVar, chouAt:chouAt,
+    modeCnt:modeCnt,
+    totGall: totG
+  };
+}
+
+// 確率→設定らしさ（簡易：分母列に対し近い設定を返す）
+function rateGuess(hits, total, rates){
+  if(!total||!hits) return null;
+  var actual = total/hits; // 1/X
+  // 各設定の理論分母との差
+  var best=-1, bd=1e9, arr=[];
+  for(var s=0;s<6;s++){
+    var d=Math.abs(rates[s]-actual);
+    arr.push({s:s+1, rate:rates[s], d:d});
+    if(d<bd){bd=d;best=s+1;}
+  }
+  return {actual:actual, best:best, arr:arr};
+}
+// %系の設定らしさ
+function pctGuess(hit, total, pcts){
+  if(!total) return null;
+  var actual = hit/total*100;
+  var best=-1, bd=1e9;
+  for(var s=0;s<6;s++){var d=Math.abs(pcts[s]-actual);if(d<bd){bd=d;best=s+1;}}
+  return {actual:actual, best:best};
+}
+
+/* ---- 設定確定/濃厚 判定（カウンターのトロフィー・終了画面等から） ---- */
+function confirmedMin(){
+  var min=1, reasons=[];
+  function bump(v,why){ if(v>min){min=v;} if(v>=2){reasons.push(why+'→設'+v+(v===6?'':'以上')+'濃厚');} }
+  // サミートロフィー
+  if(cc('tr_niji'))bump(6,'虹トロフィー');
+  if(cc('tr_kirin'))bump(5,'キリン柄トロフィー');
+  if(cc('tr_kin'))bump(4,'金トロフィー');
+  if(cc('tr_gin'))bump(3,'銀トロフィー');
+  if(cc('tr_dou'))bump(2,'銅トロフィー');
+  // CZ終了画面
+  if(cc('cz_zenin'))bump(6,'CZ終了画面「全員集合」');
+  if(cc('cz_vacance'))bump(4,'CZ終了画面「バカンス」');
+  if(cc('cz_kouan'))bump(2,'CZ終了画面「公安9課」');
+  // AT終了画面/一枚絵
+  if(cc('end_aoi'))bump(4,'終了画面「アオイ」(モードD+設4↑)');
+  // エンディング上パネル
+  if(cc('ed_niji'))bump(6,'EDパネル虹');
+  if(cc('ed_murasaki'))bump(2,'EDパネル紫');
+  // S.A.M.同一エピソード連続
+  if(cc('sam_renzoku'))bump(2,'S.A.M.同一エピソード連続');
+  return {min:min, reasons:reasons};
+}
+
+/* ============ レンダリング ============ */
+function render(){
+  rHdr(); rQS();
+  var bd=$('#bd'); if(!bd) return;
+  if(curTab==='rec') bd.innerHTML=rRec();
+  else if(curTab==='cnt') bd.innerHTML=rCnt();
+  else if(curTab==='nav') bd.innerHTML=rNav();
+  else if(curTab==='log') bd.innerHTML=rLog();
+  else if(curTab==='info') bd.innerHTML=rInfo();
+  else if(curTab==='exp') bd.innerHTML=rExp();
+  $$('.tab').forEach(function(t){ t.classList.toggle('on', t.dataset.tab===curTab); });
+}
+
+function rHdr(){
+  var cf=confirmedMin();
+  var b=$('#setBtn'), m=$('#confirmMsg');
+  if(cf.min>1){
+    b.className='hb p'; b.textContent='設'+cf.min+(cf.min===6?' 確定':'以上');
+    m.className='cfm'; m.style.background='rgba(255,61,127,.1)'; m.style.border='1px solid rgba(255,61,127,.3)'; m.style.color='#ff9bbd';
+    m.innerHTML='🔓 '+esc(cf.reasons.join(' / '));
+  }else{
+    b.className='hb'; b.textContent='示唆 −';
+    m.className=''; m.innerHTML='';
+  }
+}
+
+function rQS(){
+  var st=stats();
+  var czr = rateGuess(st.czN, st.totGall, CZ_RATE);
+  var atr = rateGuess(st.atN, st.totGall, AT_RATE);
+  var html='';
+  html+='<div class="qc"><span class="l">総G数</span><span class="v s">'+(st.totGall||0)+'</span></div>';
+  html+='<div class="qc"><span class="l">CZ '+(st.czN||0)+'回</span><span class="v s">'+(st.czN&&st.totGall?('1/'+Math.round(st.totGall/st.czN)):'—')+'</span>'+(czr?'<span class="v2">≒設'+czr.best+'</span>':'')+'</div>';
+  html+='<div class="qc"><span class="l">AT '+(st.atN||0)+'回</span><span class="v s">'+(st.atN&&st.totGall?('1/'+Math.round(st.totGall/st.atN)):'—')+'</span>'+(atr?'<span class="v2">≒設'+atr.best+'</span>':'')+'</div>';
+  // 視覚HACK率：分子=HACK発生、分母=CZ失敗+S9M失敗+電脳MODE終了
+  var hg = pctGuess(st.hackN, st.hackDenom, SIKAKU);
+  var hv = st.hackDenom? (st.hackN/st.hackDenom*100).toFixed(1)+'%' : '—';
+  html+='<div class="qc"><span class="l">視覚HACK '+st.hackN+'/'+st.hackDenom+'</span><span class="v s">'+hv+'</span>'+(hg?'<span class="v2">≒設'+hg.best+'</span>':'')+'</div>';
+  $('#qs').innerHTML=html;
+}
+
+/* ---------- 記録タブ ---------- */
+var EVENTS=[
+  // 通常時
+  {k:'zone', n:'殲滅ゾーン', s:'マス発展', g:'通常時'},
+  {k:'cz', n:'CZ', s:'S.A.M / タチコマ', g:'通常時'},
+  {k:'czmode', n:'CZ後モード', s:'失敗後の移行', g:'通常時'},
+  {k:'tachisign', n:'タチコマ示唆', s:'SAM出現期待', g:'通常時'},
+  {k:'kanban', n:'タチコマ看板', s:'pt示唆(色)', g:'通常時'},
+  {k:'chou', n:'高確/超高確', s:'設定変更/AT後', g:'通常時'},
+  // AT・上位
+  {k:'at', n:'AT開始', s:'S.A.C.モード', g:'AT・上位'},
+  {k:'s9m', n:'S9M', s:'SECTION9', g:'AT・上位'},
+  {k:'haku', n:'白の境界', s:'上位CZ', g:'AT・上位'},
+  {k:'rush', n:'電脳RUSH', s:'上位AT', g:'AT・上位'},
+  {k:'denno', n:'電脳MODE', s:'上乗せ特化', g:'AT・上位'},
+  {k:'end', n:'AT/ED終了', s:'終了画面確認', g:'AT・上位'},
+  // その他
+  {k:'hack', n:'視覚HACK', s:'失敗→復活', g:'その他'},
+  {k:'choku', n:'AT直撃', s:'レア役等', g:'その他'},
+  {k:'other', n:'その他', s:'メモ', g:'その他'}
+];
+// CZ終了画面（PUSHで出現する一枚絵・設定示唆）
+var CZ_SCR=[
+  {v:'aozora', n:'青空のみ', h:''},
+  {v:'waraiotoko', n:'青空+笑い男', h:'復活50%'},
+  {v:'kouan', n:'青空+公安9課', h:'設2↑'},
+  {v:'opeko', n:'オペ子', h:'奇数'},
+  {v:'tachikoma', n:'タチコマ', h:'偶数'},
+  {v:'togusa', n:'トグサ', h:'高設定弱'},
+  {v:'ishikawa', n:'イシカワ', h:'高設定強'},
+  {v:'motoko', n:'素子', h:'1456+高強'},
+  {v:'vacance', n:'バカンス', h:'設4↑'},
+  {v:'zenin', n:'全員集合(金)', h:'設6'}
+];
+// AT/ED終了画面・アイキャッチ
+var AT_SCR=[
+  {v:'motoko', n:'素子', h:''},
+  {v:'motoko_tachi', n:'素子＆タチコマ', h:'高設定弱'},
+  {v:'togusa', n:'トグサ', h:'奇数'},
+  {v:'batou', n:'バトー', h:'偶数'},
+  {v:'poker', n:'ポーカー', h:'高モード'},
+  {v:'ushiro', n:'素子の後ろ姿', h:'モードB↑'},
+  {v:'kouan', n:'公安9課', h:'モードC↑'},
+  {v:'denno_motoko', n:'電脳素子', h:'モードC↑+D期待'},
+  {v:'aoi', n:'アオイ(金)', h:'モードD+設4↑'},
+  {v:'2ndgig', n:'2nd GIG', h:'白の境界権利'}
+];
+// エンディング上パネル
+var ED_PANEL=[
+  {v:'ao', n:'青', h:'奇数'},
+  {v:'ki', n:'黄', h:'偶数'},
+  {v:'midori', n:'緑', h:'奇数+高'},
+  {v:'aka', n:'赤', h:'偶数+高'},
+  {v:'murasaki', n:'紫', h:'設2↑'},
+  {v:'niji', n:'虹', h:'設6'}
+];
+function rRec(){
+  var h='';
+  h+='<div class="card glow"><div class="ct">イベント記録 <span class="tag b">G数→項目→記録</span></div>';
+
+  // G数入力（最上部・常時表示）
+  h+='<div class="fld"><div class="fl">消化G数（前回区切りからの累計）</div>';
+  h+='<input id="iG" type="number" inputmode="numeric" placeholder="G数を入力" value="'+esc(cur.g)+'" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:11px 13px;color:#eaf6f3;font-size:16px;font-weight:700;font-family:\'SF Mono\',ui-monospace,monospace;outline:none">';
+  h+='</div>';
+
+  // イベント選択
+  var gcls={'通常時':'eb-normal','AT・上位':'eb-at','その他':'eb-other'};
+  var ghue={'通常時':'#5fe6d6','AT・上位':'#b9a3ff','その他':'rgba(255,255,255,.55)'};
+  if(!cur.ev){
+    // 未選択：グループ別グリッドを表示
+    h+='<div class="fld"><div class="fl">イベント</div>';
+    var groups=['通常時','AT・上位','その他'];
+    var gicon={'通常時':'🎰','AT・上位':'🌀','その他':'⚙️'};
+    groups.forEach(function(gname){
+      h+='<div class="egrp"><span class="egrp-h" style="color:'+ghue[gname]+'">'+gicon[gname]+' '+esc(gname)+'</span><div class="eg">';
+      EVENTS.forEach(function(e){
+        if(e.g!==gname) return;
+        h+='<button class="eb '+gcls[gname]+'" data-ev="'+e.k+'">'+esc(e.n)+'<span class="es">'+esc(e.s)+'</span></button>';
+      });
+      h+='</div></div>';
+    });
+    h+='</div>';
+  }else{
+    // 選択後：選んだイベントのみ表示＋変更ボタン
+    var sel=null;
+    for(var ei=0;ei<EVENTS.length;ei++){ if(EVENTS[ei].k===cur.ev){ sel=EVENTS[ei]; break; } }
+    var selCls = sel? gcls[sel.g] : '';
+    h+='<div class="fld"><div class="fl">イベント</div>';
+    h+='<div class="eg" style="grid-template-columns:1fr auto">';
+    h+='<button class="eb '+selCls+' on" data-ev="'+cur.ev+'">'+esc(sel?sel.n:cur.ev)+(sel?'<span class="es">'+esc(sel.s)+'</span>':'')+'</button>';
+    h+='<button class="eb eb-other" data-a="evchange" style="min-width:84px">🔄 変更</button>';
+    h+='</div></div>';
+  }
+
+  // 各イベント別の入力欄
+  if(cur.ev==='cz'){
+    h+='<div class="fld"><div class="fl">CZ突入契機（設定推測の母数管理）</div><div class="seg">';
+    h+=so('cztrig','g200','200タチコマ');
+    h+=so('cztrig','g400','400タチコマ');
+    h+=so('cztrig','sam','S.A.M.');
+    h+='</div><div class="seg" style="margin-top:5px">';
+    h+=so('cztrig','kakutei','確定CZ');
+    h+=so('cztrig','hosyou','白境界後保証');
+    h+='</div>';
+    h+='<div class="sub" style="margin-top:6px">※200/400タチコマは「タチコマの家出」当選率の母数。到達してスルー（ハズレ）も必ず記録すると正しい当選率が出ます。確定/白境界後保証は推測母数から除外。失敗はHACK率の分母になります。</div></div>';
+    if(cur.cztrig==='g200'||cur.cztrig==='g400'){
+      h+='<div class="fld"><div class="fl">タチコマの家出 当落</div><div class="seg">';
+      h+=so('res','s','発展（当選）','win');
+      h+=so('res','f','スルー（ハズレ）','lose');
+      h+='</div></div>';
+    }else{
+      h+=resSeg('成否');
+    }
+    // 失敗を選んだ場合のみ終了画面（PUSHで一枚絵）を表示
+    if(cur.res==='f'){
+      h+=scrPick('CZ終了画面（PUSHで一枚絵）', CZ_SCR);
+    }
+    // S.A.M.のステージ（1〜4・ステージ4到達で成功濃厚）
+    if(cur.cztrig==='sam'){
+      h+='<div class="fld"><div class="fl">S.A.M.到達ステージ（任意・4到達で成功濃厚）</div><div class="seg">';
+      for(var sg=1;sg<=4;sg++){ h+=so('samstage',String(sg),'St'+sg); }
+      h+='</div></div>';
+    }
+  }else if(cur.ev==='s9m'){
+    h+=resSeg('成否');
+    h+='<div class="fld"><div class="fl">エピソード（任意・設定差なし）</div><div class="seg">';
+    h+=so('s9mep','mohou','模倣者(青)','c-ao');
+    h+=so('s9mep','okizari','置き去り(黄)');
+    h+='</div><div class="seg" style="margin-top:5px">';
+    h+=so('s9mep','kojo','孤城落日(緑)','c-midori');
+    h+=so('s9mep','shoen','硝煙弾雨(赤)','c-aka');
+    h+='</div></div>';
+    h+='<div class="sub" style="margin-top:6px">※エピソードは4種（青/黄/緑/赤）。選択率は全設定共通で設定差なし。緑/赤は回胴HACK発生期待度が高い。失敗はHACK率の分母になります。</div>';
+  }else if(cur.ev==='at'){
+    h+='<div class="sub" style="margin-top:6px">※AT開始を記録。引き戻しストックはカウンタータブで管理できます。</div>';
+  }else if(cur.ev==='denno'){
+    h+='<div class="sub" style="margin-top:6px">※上乗せ特化「電脳MODE」。終了でHACK率の分母に+1されます（失敗概念なし）。</div>';
+  }else if(cur.ev==='zone'){
+    h+='<div class="fld"><div class="fl">発展したマスの色</div><div class="seg">';
+    h+=so('tachi','white','白〜紫');
+    h+=so('tachi','blue','青','c-ao');
+    h+=so('tachi','green','緑','c-midori');
+    h+=so('tachi','red','赤','c-aka');
+    h+='</div></div>';
+    if(cur.tachi==='white'){
+      // 白〜紫はCZ以上当選率の設定差なし→AT直撃の有無を記録
+      h+='<div class="fld"><div class="fl">結果</div><div class="seg">';
+      h+=so('res','choku','AT直撃','win');
+      h+=so('res','f','直撃なし','lose');
+      h+='</div></div>';
+      h+='<div class="sub" style="margin-top:6px">※白〜紫マスはCZ以上当選率の設定差なし（色別集計対象外）。稀なAT直撃のみ記録できます。</div>';
+    }else if(cur.tachi){
+      h+=resSeg('CZ以上当選（成功）/ 非当選（失敗）');
+      h+='<div class="sub" style="margin-top:6px">※青・緑・赤マスはCZ以上当選率に設定差あり（青マスが最大）。当落を記録するとカウンタータブで色別に設定推定されます。</div>';
+    }else{
+      h+='<div class="sub" style="margin-top:6px">※マス色を選択してください。青・緑・赤は当落を、白〜紫はAT直撃の有無を記録します。</div>';
+    }
+    // テーブル（1〜7）：高設定ほど高テーブル選択率UP
+    h+='<div class="fld"><div class="fl">殲滅テーブル（任意・高設定ほど高テーブル）</div><div class="seg seg-c">';
+    for(var tb=1;tb<=7;tb++){ h+=so('ztable',String(tb),'T'+tb); }
+    h+='</div></div>';
+    // 撃破数
+    h+='<div class="fld"><div class="fl">撃破数（任意・100体でCZ確定/内部150で虹）</div>';
+    h+='<input id="iKill" type="number" inputmode="numeric" placeholder="撃破数" value="'+esc(cur.kill)+'" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:11px 13px;color:#eaf6f3;font-size:16px;font-weight:700;font-family:\'SF Mono\',ui-monospace,monospace;outline:none"></div>';
+    // 殲滅チャンス
+    h+='<div class="fld"><div class="fl">殲滅チャンス（任意・CZ以上濃厚）</div><div class="seg">';
+    h+=so('zchance','kin','殲滅チャンス(金)','c-kin');
+    h+=so('zchance','niji','HYPER(虹)','c-niji');
+    h+='</div></div>';
+  }else if(cur.ev==='czmode'){
+    h+='<div class="fld"><div class="fl">移行先モード（CZ失敗後）</div><div class="seg">';
+    h+=so('res','a','通常A');
+    h+=so('res','b','通常B');
+    h+=so('res','c','通常C');
+    h+=so('res','d','通常D');
+    h+='</div></div>';
+    h+='<div class="sub" style="margin-top:6px">※CZ失敗後の移行モード。通常A偏りは低設定・通常D偏りは高設定（設1=A50%/D15%→設6=A20%/D30%）。天井G・前兆・アイキャッチ等から判別。カウンタータブで集計されます。</div>';
+  }else if(cur.ev==='tachisign'){
+    h+='<div class="fld"><div class="fl">タチコマSAM出現示唆</div><div class="seg">';
+    h+=so('res','tension','てんしょんあっぷ','win');
+    h+=so('res','meisai','光学迷彩10体超','win');
+    h+='</div><div class="seg" style="margin-top:5px">';
+    h+=so('res','kyokudai','極大タチコマ','win');
+    h+=so('res','panel','パネル完成煽り','win');
+    h+='</div></div>';
+    h+='<div class="fld"><div class="fl">対象ゾーン</div><div class="seg">';
+    h+=so('cztrig','g200','200手前');
+    h+=so('cztrig','g400','400手前');
+    h+='</div></div>';
+    h+='<div class="sub" style="margin-top:6px">※タチコマSAM出現期待度の示唆。「てんしょんあっぷ！」発生でCZ/AT当選までタチコマUI常駐。光学迷彩タチコマ通過10体超or極大は濃厚。201〜210G/401〜410Gで前兆。<br>※200/400手前でCZ/ATに当選すると発動しないため、示唆が出た回数を記録して期待度の母数管理に使えます。</div>';
+  }else if(cur.ev==='kanban'){
+    h+='<div class="fld"><div class="fl">看板/笑い男マークの色（累計pt示唆）</div><div class="seg">';
+    h+=so('res','ao','青','c-ao');
+    h+=so('res','midori','緑','c-midori');
+    h+=so('res','aka','赤','c-aka');
+    h+='</div></div>';
+    h+='<div class="sub" style="margin-top:6px">※殲滅ポイント蓄積時/レバーON時の一部で出現。笑い男マークの色で累計殲滅ptを示唆（青＜緑＜赤で大チャンス）。緑/赤はロング前兆以上濃厚。所持ptが多いほど出現。</div>';
+  }else if(cur.ev==='chou'){
+    h+='<div class="fld"><div class="fl">契機</div><div class="seg">';
+    h+=so('cztrig','henkou','設定変更後');
+    h+=so('cztrig','atend','AT終了後');
+    h+='</div></div>';
+    h+='<div class="fld"><div class="fl">スタート状態</div><div class="seg">';
+    h+=so('res','normal','通常');
+    h+=so('res','kou','高確','win');
+    h+=so('res','chou','超高確','win');
+    h+='</div></div>';
+    h+='<div class="sub" style="margin-top:6px">※設定変更/AT終了後の内部状態。超高確スタート率に設定差あり（設1=2.5%→設6=4.6%）。カウンタータブで集計されます。</div>';
+  }else if(cur.ev==='haku'){
+    h+=resSeg('突破');
+    h+='<div class="sub" style="margin-top:6px">※上位CZ「白の境界」。成功で電脳RUSH（上位AT）へ。</div>';
+  }else if(cur.ev==='rush'){
+    h+='<div class="fld"><div class="fl">獲得ストック数</div><div class="seg">';
+    h+=so('stk','0','0個');
+    h+=so('stk','1','1個');
+    h+=so('stk','2','2個');
+    h+=so('stk','3','3個+');
+    h+='</div></div>';
+    h+='<div class="sub" style="margin-top:6px">※上位AT「電脳RUSH」突入を記録。純増約8.5枚/G。ストック数を記録すると引き戻しストックの集計に反映されます。</div>';
+  }else if(cur.ev==='end'){
+    h+=scrPick('AT/ED終了画面・アイキャッチ', AT_SCR);
+    h+=scrPick('エンディング上パネル', ED_PANEL, 'edp');
+    h+='<div class="sub" style="margin-top:6px">※AT終了時・CZ終了時PUSH・通常77G以降の裏コマ(左停止7回)で確認。</div>';
+  }else if(cur.ev==='hack'){
+    h+='<div class="sub" style="margin-top:6px">※視覚HACK＝CZ等の失敗→終了画面の次GにアオイがリールHACK→AT。記録すると上部のHACK率の分子に+1されます。</div>';
+  }else if(cur.ev==='choku'){
+    h+='<div class="sub" style="margin-top:6px">※レア役などからのAT直撃を記録。</div>';
+  }else if(cur.ev==='other'){
+    h+=scrPick('AT/ED終了画面・アイキャッチ', AT_SCR);
+    h+=scrPick('CZ終了画面', CZ_SCR, 'czscr');
+    h+=scrPick('エンディング上パネル', ED_PANEL, 'edp');
+    h+='<div class="sub" style="margin-top:6px">※その他のタイミングで確認したアイキャッチ・画面を自由に記録できます。設定示唆は自動でヘッダに反映されます。</div>';
+  }
+  // メモ
+  h+='<div class="fld"><div class="fl">メモ（任意）</div><textarea id="iNote" rows="2" placeholder="ステージ・示唆・所感など">'+esc(cur.note)+'</textarea></div>';
+  h+='<button class="addb" data-a="add"'+(cur.ev?'':' disabled')+'>'+(cur.ev?'記録する':'イベントを選択')+'</button>';
+  h+='</div>';
+
+  // 直近ログのミニ表示
+  if(LOG.length){
+    h+='<div class="card"><div class="ct">直近の記録</div>';
+    for(var i=LOG.length-1;i>=Math.max(0,LOG.length-4);i--){ h+=tlItem(LOG[i],i,true); }
+    h+='</div>';
+  }
+  return h;
+}
+function so(group,val,label,cls){
+  var on = cur[group]===val;
+  return '<button class="so'+(cls?' '+cls:'')+(on?' on':'')+'" data-seg="'+group+'" data-val="'+val+'">'+esc(label)+'</button>';
+}
+function resSeg(label){
+  var h='<div class="fld"><div class="fl">'+esc(label)+'</div><div class="seg">';
+  h+=so('res','s','成功',(cur.res==='s'?'win':'win'));
+  h+=so('res','f','失敗','lose');
+  h+='</div></div>';
+  return h;
+}
+// 画面・アイキャッチ選択（group既定はendscr）
+function scrPick(label, list, group){
+  group = group||'endscr';
+  var h='<div class="fld"><div class="fl">'+esc(label)+'（任意）</div><div class="eg">';
+  for(var i=0;i<list.length;i++){
+    var o=list[i], on=cur[group]===o.v;
+    h+='<button class="eb'+(on?' on':'')+'" data-seg="'+group+'" data-val="'+o.v+'">'+esc(o.n)+(o.h?'<span class="es">'+esc(o.h)+'</span>':'')+'</button>';
+  }
+  h+='</div></div>';
+  return h;
+}
+
+/* ---------- カウンタータブ ---------- */
+// 記録タブで自動集計される母数・画面系は重複のため除外。
+// ここは記録タブに入力手段がない手動示唆のみ。
+function counterDef(){
+  return [
+  {grp:'設定示唆（出たら+1）'},
+  {k:'tr_dou', n:'銅トロフィー', badge:'設2以上', bc:'tier'},
+  {k:'tr_gin', n:'銀トロフィー', badge:'設3以上', bc:'tier'},
+  {k:'tr_kin', n:'金トロフィー', badge:'設4以上', bc:'tier'},
+  {k:'tr_kirin', n:'キリン柄トロフィー', badge:'設5以上', bc:'tier'},
+  {k:'tr_niji', n:'虹トロフィー', badge:'設6確定', bc:'rainbow'},
+
+  {grp:'S.A.M.エピソード'},
+  {k:'sam_renzoku', n:'同一エピソード2連続', badge:'設2以上', bc:'tier', hint:'暴走の証明/恵まれし者たちは通常交互'}
+  ];
+}
+var BC={tier:'rgba(0,229,200,.14)|#5fe6d6', rainbow:'rgba(255,61,127,.18)|#ff7da6', odd:'rgba(91,200,255,.14)|#7fc8ff', even:'rgba(255,180,80,.14)|#ffce8a', high:'rgba(180,120,255,.14)|#c39bff'};
+function rCnt(){
+  var defs=counterDef(), h='';
+  var st=stats();
+
+  // 基本確率（記録タブから自動集計）
+  h+='<div class="card glow"><div class="ct">📊 基本確率 <span class="tag b">記録タブから自動集計</span></div>';
+  h+='<table class="itbl"><tr><th>項目</th><th>回数</th><th>確率</th><th>≒設定</th></tr>';
+  var czr=rateGuess(st.czN, st.totGall, CZ_RATE);
+  var atr=rateGuess(st.atN, st.totGall, AT_RATE);
+  h+='<tr><td class="k">総G数</td><td colspan="3">'+(st.totGall||0)+' G</td></tr>';
+  h+='<tr><td class="k">CZ</td><td>'+(st.czN||0)+'</td><td class="h">'+(st.czN&&st.totGall?('1/'+Math.round(st.totGall/st.czN)):'—')+'</td><td>'+(czr?'設'+czr.best:'—')+'</td></tr>';
+  h+='<tr><td class="k">AT初当り</td><td>'+(st.atN||0)+'</td><td class="h">'+(st.atN&&st.totGall?('1/'+Math.round(st.totGall/st.atN)):'—')+'</td><td>'+(atr?'設'+atr.best:'—')+'</td></tr>';
+  h+='<tr><td class="k">殲滅ゾーン</td><td>'+(st.zoneN||0)+'</td><td class="h">'+(st.zoneN&&st.totGall?('1/'+Math.round(st.totGall/st.zoneN)):'—')+'</td><td>—</td></tr>';
+  h+='</table>';
+  h+='<div class="calc-sub" style="margin-top:5px">※殲滅ゾーンはモード・ゲーム性依存のため設定推定は非対象（突入率の目安）。</div>';
+  if(!st.totGall){ h+='<div class="sub" style="margin-top:6px">記録タブでG数とイベントを記録すると確率が出ます。</div>'; }
+  h+='</div>';
+
+  // 高確/超高確スタート集計（記録タブのchouイベントから）
+  var cV=st.chouVar, cA=st.chouAt;
+  var chouTotalN = cV.total + cA.total;
+  var chouChouN = cV.chou + cA.chou;
+  var chouKouN = cV.kou + cA.kou;
+
+  // 当選率系の推定（記録タブから自動集計）
+  var hasRate = st.tachiTry||st.stkTry||chouTotalN||st.hackDenom;
+  if(hasRate){
+    h+='<div class="card glow"><div class="ct">🎯 当選率の設定推定</div>';
+    if(st.tachiTry) h+=estBar('タチコマの家出(200/400G)', st.tachiHit, st.tachiTry, TACHI, '%');
+    if(st.stkTry) h+=estBar('引き戻しストック', st.stkHit, st.stkTry, STOCK, '%');
+    if(chouTotalN) h+=estBar('超高確スタート', chouChouN, chouTotalN, CHOU, '%');
+    if(st.hackDenom) h+=estBar('視覚HACK', st.hackN, st.hackDenom, SIKAKU, '%');
+    h+='</div>';
+  }
+
+  // 高確/超高確スタートの内訳（記録があれば）
+  if(chouTotalN){
+    h+='<div class="card"><div class="ct">🔵 高確/超高確スタート内訳</div>';
+    h+='<table class="itbl"><tr><th>契機</th><th>計</th><th>高確</th><th>超高確</th></tr>';
+    h+='<tr><td class="k">設定変更後</td><td>'+cV.total+'</td><td>'+cV.kou+'</td><td class="h">'+cV.chou+'</td></tr>';
+    h+='<tr><td class="k">AT終了後</td><td>'+cA.total+'</td><td>'+cA.kou+'</td><td class="h">'+cA.chou+'</td></tr>';
+    h+='<tr><td class="k">合計</td><td>'+chouTotalN+'</td><td>'+chouKouN+'</td><td class="h">'+chouChouN+'</td></tr>';
+    h+='</table>';
+    h+='<div class="calc-sub" style="margin-top:5px">超高確スタート率 '+(chouChouN/chouTotalN*100).toFixed(1)+'%（設1=2.5%→設6=4.6%）</div></div>';
+  }
+
+  // CZ後モード集計（記録タブのczmodeイベントから）
+  var mc=st.modeCnt, mcTot=mc[0]+mc[1]+mc[2]+mc[3];
+  if(mcTot){
+    // 観測分布に最も近い設定を推定（差の二乗和が最小）
+    var modeTbl=[MODE_A,MODE_B,MODE_C,MODE_D];
+    var bestSet=-1, bestErr=1e9;
+    for(var sIdx=0;sIdx<6;sIdx++){
+      var err=0;
+      for(var m=0;m<4;m++){
+        var obs=mc[m]/mcTot*100, theo=modeTbl[m][sIdx];
+        err+=(obs-theo)*(obs-theo);
+      }
+      if(err<bestErr){bestErr=err;bestSet=sIdx+1;}
+    }
+    h+='<div class="card glow"><div class="ct">🏯 CZ後モード移行 <span class="tag b">'+mcTot+'回</span></div>';
+    h+='<table class="itbl"><tr><th>モード</th><th>回数</th><th>実測</th><th>設'+bestSet+'理論</th></tr>';
+    var mnames=['通常A','通常B','通常C','通常D'];
+    for(var mm=0;mm<4;mm++){
+      var pct=(mc[mm]/mcTot*100).toFixed(1);
+      h+='<tr><td class="k">'+mnames[mm]+'</td><td>'+mc[mm]+'</td><td class="h">'+pct+'%</td><td>'+modeTbl[mm][bestSet-1].toFixed(1)+'%</td></tr>';
+    }
+    h+='</table>';
+    h+='<div class="calc"><div class="calc-l">観測分布に最も近い設定 <span class="calc-hl">≒設'+bestSet+'</span></div>';
+    h+='<div class="calc-sub">通常A偏り＝低設定 / 通常D偏り＝高設定。母数が少ないと精度が低いので参考程度に。</div></div>';
+    h+='</div>';
+  }
+
+  // 殲滅ゾーン マス色別（記録タブから自動集計）
+  var zT=st.zTry, zH=st.zHit, zTtot=zT[0]+zT[1]+zT[2], zHtot=zH[0]+zH[1]+zH[2];
+  if(zTtot){
+    h+='<div class="card glow"><div class="ct">🟦 殲滅ゾーン CZ以上当選率</div>';
+    h+='<div class="calc" style="margin-top:0"><div class="calc-t">合算 CZ以上当選率</div>';
+    h+='<div class="calc-l">青緑赤の全突入 <span class="calc-hl">'+zHtot+'/'+zTtot+' = '+(zHtot/zTtot*100).toFixed(1)+'%</span></div>';
+    h+='<div class="calc-sub">※色構成で変動。設定推定は色別を参照。</div></div>';
+    if(zT[0]) h+=estBar('青マス', zH[0], zT[0], ZONE_BLUE, '%');
+    if(zT[1]) h+=estBar('緑マス', zH[1], zT[1], ZONE_GREEN, '%');
+    if(zT[2]) h+=estBar('赤マス', zH[2], zT[2], ZONE_RED, '%');
+    h+='</div>';
+  }
+
+  h+='<div class="sub" style="margin:10px 0 6px">▼ 以下は手動で計上する設定示唆（台に出たら+1）</div>';
+
+  var open=false;
+  defs.forEach(function(d){
+    if(d.grp){ if(open) h+='</div>'; h+='<div class="card"><div class="ct">'+esc(d.grp)+'</div>'; open=true; return; }
+    var n=cc(d.k), act=n>0;
+    h+='<div class="crow'+(act?' active':'')+'"><div class="cinfo"><div class="cnm">'+esc(d.n)+'</div>';
+    if(d.hint) h+='<div class="chint">'+esc(d.hint)+'</div>';
+    if(d.badge){ var col=(BC[d.bc]||'rgba(255,255,255,.1)|#ccc').split('|'); h+='<span class="cbadge" style="background:'+col[0]+';color:'+col[1]+'">'+esc(d.badge)+'</span>'; }
+    h+='</div><div class="cw"><button class="cmin" data-cm="'+d.k+'">−</button><div class="cval'+(act?' hot':'')+'">'+n+'</div><button class="cplus" data-cp="'+d.k+'">＋</button></div></div>';
+  });
+  if(open) h+='</div>';
+  return h;
+}
+function estBar(name,hit,total,pcts,unit){
+  var g=pctGuess(hit,total,pcts);
+  var h='<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span style="color:rgba(255,255,255,.7);font-weight:700">'+esc(name)+'</span><span style="color:#7fe9dc;font-family:monospace">'+(total?(hit+'/'+total+' = '+(hit/total*100).toFixed(1)+'%'):'—')+'</span></div>';
+  for(var s=0;s<6;s++){
+    var pct=pcts[s], w=clamp(pct/(pcts[5]*1.15)*100,3,100);
+    var best=g&&g.best===s+1;
+    h+='<div class="sbar'+(best?' best':'')+'"><span class="sl">設'+(s+1)+'</span><span class="st"><span class="sf" style="width:'+w+'%"></span></span><span class="sv">'+pct.toFixed(1)+'%</span></div>';
+  }
+  if(g) h+='<div class="calc-sub">実測≒設'+g.best+'（'+g.actual.toFixed(1)+'%）</div>';
+  h+='</div>';
+  return h;
+}
+
+/* ---------- 攻略タブ ---------- */
+function rNav(){
+  var h='';
+  h+='<div class="card glow"><div class="ct">🎯 まず狙うべき台</div>';
+  h+='<div class="ib"><p>AT終了後は<span class="em2">約50%でモードD</span>へ移行（次回CZまで最大150G+α・機械割100%超）。<span class="em">AT後の引き継ぎ狙い</span>が基本。さらに上位AT「白の境界」失敗後は<span class="em">CZ天井が最大400G+αに短縮</span>＆200or400Gでタチコマ当選確定。</p></div></div>';
+
+  h+='<div class="card"><div class="ct">🏯 殲滅モードとCZ天井</div>';
+  h+='<table class="itbl"><tr><th>モード</th><th>CZ天井</th><th>特徴</th></tr>';
+  h+='<tr><td class="k">リセット</td><td class="h">350G+α</td><td>朝一専用・末尾50G毎1/2</td></tr>';
+  h+='<tr><td class="k">A</td><td>550G+α</td><td>基本・100/250/450が本命</td></tr>';
+  h+='<tr><td class="k">B</td><td>450G+α</td><td>50/150/350が本命</td></tr>';
+  h+='<tr><td class="k">C</td><td>250G+α</td><td>優遇・100/250本命</td></tr>';
+  h+='<tr><td class="k">D</td><td class="h">150G+α</td><td>最優遇・50Gで100%殲滅</td></tr>';
+  h+='</table>';
+  h+='<div class="ib"><p><span class="em3">天井到達時</span>＝CZ以上確定の殲滅ゾーン突入。</p></div></div>';
+
+  h+='<div class="card"><div class="ct">📍 ゾーン期待度（殲滅ゾーン突入率）</div>';
+  h+='<table class="itbl"><tr><th>G</th><th>A</th><th>B</th><th>C</th><th>D</th></tr>';
+  h+='<tr><td class="k">50</td><td>25%</td><td>50%</td><td>25%</td><td class="h">100%</td></tr>';
+  h+='<tr><td class="k">100</td><td>50%</td><td>-</td><td>50%</td><td>-</td></tr>';
+  h+='<tr><td class="k">150</td><td>-</td><td>50%</td><td>-</td><td class="h">天井</td></tr>';
+  h+='<tr><td class="k">200</td><td colspan="3">タチコマ家出に期待</td><td>-</td></tr>';
+  h+='<tr><td class="k">250</td><td>50%</td><td>25%</td><td class="h">天井</td><td>-</td></tr>';
+  h+='<tr><td class="k">350</td><td>25%</td><td>50%</td><td>-</td><td>-</td></tr>';
+  h+='<tr><td class="k">400</td><td colspan="2">タチコマ家出に期待</td><td>-</td><td>-</td></tr>';
+  h+='<tr><td class="k">450</td><td>50%</td><td class="h">天井</td><td>-</td><td>-</td></tr>';
+  h+='<tr><td class="k">550</td><td class="h">天井</td><td>-</td><td>-</td><td>-</td></tr>';
+  h+='</table>';
+  h+='<div class="ib"><p><span class="em">ゲーム数表示の色</span>：赤＝本前兆期待大。スルーでも100G以内に殲滅濃厚。</p></div></div>';
+
+  h+='<div class="card"><div class="ct">🔍 モード判別の小技</div>';
+  h+='<div class="ib"><p>・<span class="em2">100Gでロング前兆なし</span>→モードB or D<br>・<span class="em2">300Gでロング前兆あり</span>→モードB<br>・終了画面「<span class="em">素子の後ろ姿</span>」→モードB以上（続行アリ）<br>・「公安9課」→モードC以上 / 「電脳素子」→モードC以上かつD期待 / 「アオイ」→<span class="em">モードD＋設4以上</span></p></div>';
+  h+='<div class="ib"><p>裏コマンド：通常77G以降に<span class="em">左停止ボタン7回</span>で一枚絵が出現。モード・設定推測に積極活用。</p></div></div>';
+
+  h+='<div class="card"><div class="ct">🚪 やめどき</div>';
+  h+='<div class="ib"><p>基本は<span class="em">AT/CZ後の前兆確認後</span>。AT後はモードD期待で50Gは回したい（50Gゾーン強）。<span class="em3">白の境界（上位CZ）失敗後</span>は400G+αまでにタチコマ当選確定なので続行推奨。「素子の後ろ姿」等のモードB以上示唆が出たら続行が得。</p></div>';
+  h+='<div class="ib"><p>※リセット濃厚な朝一は350G+α天井＋末尾50G毎1/2で殲滅。データカウンターと前日最終Gから判断。</p></div></div>';
+
+  h+='<div class="card"><div class="ct">⚡ HACK / プレミア</div>';
+  h+='<div class="ib"><p>・<span class="em2">視覚HACK</span>＝CZ失敗→終了画面の次GにアオイがリールHACK→AT。高設定ほど発生（フラグ保有率 設1=5.7%→設6=10.6%）。<br>・ロングフリーズ等のプレミア契機あり。<br>・上位AT「電脳RUSH」は純増約8.5枚/Gで一気に出玉増。</p></div></div>';
+  return h;
+}
+
+/* ---------- 履歴タブ ---------- */
+function evMeta(k){
+  var m={cz:['🛰️','CZ'],czmode:['🏯','CZ後モード'],tachisign:['🤖','タチコマ示唆'],kanban:['🪧','タチコマ看板'],chou:['🔵','高確/超高確'],s9m:['🎯','S9M'],at:['🎰','AT開始'],denno:['💠','電脳MODE'],zone:['🟦','殲滅ゾーン'],haku:['⚪','白の境界'],rush:['🌀','電脳RUSH'],end:['🖼️','終了画面'],hack:['👁️','視覚HACK'],choku:['⚡','AT直撃'],other:['📝','メモ']};
+  return m[k]||['•',k];
+}
+// 画面値→表示名（CZ_SCR/AT_SCR/ED_PANEL横断）
+function scrName(v){
+  if(!v) return '';
+  var all=CZ_SCR.concat(AT_SCR).concat(ED_PANEL);
+  for(var i=0;i<all.length;i++) if(all[i].v===v) return all[i].n;
+  return v;
+}
+function tlItem(e,i,mini){
+  var m=evMeta(e.ev);
+  var sub=[];
+  if(e.cztrig){
+    if(e.ev==='tachisign'){ var tz={g200:'200手前',g400:'400手前'}; sub.push(tz[e.cztrig]||e.cztrig); }
+    else { var ct={normal:'通常',g200:'200G',g400:'400G',sam:'S.A.M.',kakutei:'確定',hosyou:'白境界後',henkou:'設定変更後',atend:'AT終了後'}; sub.push(ct[e.cztrig]||e.cztrig); }
+  }
+  if(e.tachi){ var tc={white:'白〜紫',blue:'青',green:'緑',red:'赤',hit:'当選'}; sub.push('マス:'+(tc[e.tachi]||e.tachi)); }
+  if(e.res){
+    if(e.ev==='chou'){ var cs={normal:'通常',kou:'🔵高確',chou:'🔵超高確'}; sub.push(cs[e.res]||e.res); }
+    else if(e.ev==='czmode'){ var ms={a:'通常A',b:'通常B',c:'通常C',d:'通常D'}; sub.push(ms[e.res]||e.res); }
+    else if(e.ev==='tachisign'){ var ts={tension:'てんしょんあっぷ',meisai:'光学迷彩10体超',kyokudai:'極大タチコマ',panel:'パネル完成煽り'}; sub.push('🤖'+(ts[e.res]||e.res)); }
+    else if(e.ev==='kanban'){ var kb={ao:'🔵青',midori:'🟢緑',aka:'🔴赤'}; sub.push('看板'+(kb[e.res]||e.res)); }
+    else if(e.ev==='cz' && (e.cztrig==='g200'||e.cztrig==='g400')){ sub.push(e.res==='s'?'⚡発展':'➡️スルー'); }
+    else { var rl={s:'✅成功',f:'❌失敗',choku:'⚡AT直撃'}; sub.push(rl[e.res]||e.res); }
+  }
+  if(e.samstage){ sub.push('St'+e.samstage); }
+  if(e.s9mep){ var ep={mohou:'模倣者(青)',okizari:'置き去り(黄)',kojo:'孤城落日(緑)',shoen:'硝煙弾雨(赤)'}; sub.push('EP:'+(ep[e.s9mep]||e.s9mep)); }
+  if(e.ztable){ sub.push('T'+e.ztable); }
+  if(e.kill!=null && e.kill!=='') sub.push(e.kill+'体撃破');
+  if(e.zchance){ var zc={kin:'殲滅チャンス金',niji:'HYPER虹'}; sub.push('🔥'+(zc[e.zchance]||e.zchance)); }
+  if(e.stk!=null && e.stk!=='') sub.push('ストック'+e.stk+'個');
+  if(e.endscr){ sub.push('🖼'+scrName(e.endscr)); }
+  if(e.czscr){ sub.push('🖼CZ:'+scrName(e.czscr)); }
+  if(e.edp){ sub.push('パネル:'+scrName(e.edp)); }
+  if(e.note) sub.push(esc(e.note));
+  var h='<div class="tli">';
+  h+='<div class="tli-i">'+m[0]+'</div>';
+  h+='<div class="tli-b"><div class="tli-t">'+esc(m[1])+'</div>';
+  if(sub.length) h+='<div class="tli-s">'+sub.join('・')+'</div>';
+  h+='</div>';
+  if(typeof e.g==='number'&&e.g>0) h+='<div class="tli-g">'+e.g+'G</div>';
+  if(!mini) h+='<button class="tli-x" data-del="'+i+'">×</button>';
+  h+='</div>';
+  return h;
+}
+function rLog(){
+  if(!LOG.length) return '<div class="tl-empty">記録がありません。<br>「記録」タブからイベントを追加してください。</div>';
+  var h='<div class="card"><div class="ct">履歴 <span class="tag b">'+LOG.length+'件</span></div>';
+  for(var i=LOG.length-1;i>=0;i--){ h+=tlItem(LOG[i],i,false); }
+  h+='</div>';
+  return h;
+}
+
+/* ---------- 示唆タブ ---------- */
+function rInfo(){
+  var h='';
+  h+='<div class="card glow"><div class="ct">📊 設定差のある抽選値</div>';
+  h+='<table class="itbl"><tr><th>設定</th><th>CZ</th><th>AT</th><th>機械割</th></tr>';
+  for(var s=0;s<6;s++){ h+='<tr><td class="k">設'+(s+1)+'</td><td>1/'+CZ_RATE[s].toFixed(1)+'</td><td class="'+(s>=3?'h':'')+'">1/'+AT_RATE[s].toFixed(1)+'</td><td>'+KW[s].toFixed(1)+'%</td></tr>'; }
+  h+='</table>';
+  h+='<div class="ib"><p>CZの設定差は小さめ。<span class="em">AT確率を重視</span>（設4以上で概ね1/300切り）。実測値はカウンタータブで確認できます。</p></div></div>';
+
+  h+='<div class="card"><div class="ct">🎯 メイン判別要素</div>';
+  h+=infoTbl('200/400G タチコマの家出',['設1','設2','設3','設4','設5','設6'],TACHI,'%');
+  h+=infoTbl('引き戻しストック当選',['設1','設2','設3','設4','設5','設6'],STOCK,'%');
+  h+=infoTbl('超高確スタート率',['設1','設2','設3','設4','設5','設6'],CHOU,'%');
+  h+=infoTbl('S.A.M.視覚フラグ保有',['設1','設2','設3','設4','設5','設6'],SIKAKU,'%');
+  h+='</div>';
+
+  h+='<div class="card"><div class="ct">🟦 殲滅ゾーン CZ以上当選率（マス色別）</div>';
+  h+=infoTbl('青マス',['設1','設2','設3','設4','設5','設6'],ZONE_BLUE,'%');
+  h+=infoTbl('緑マス',['設1','設2','設3','設4','設5','設6'],ZONE_GREEN,'%');
+  h+=infoTbl('赤マス',['設1','設2','設3','設4','設5','設6'],ZONE_RED,'%');
+  h+='<div class="ib"><p>青マスが最大の設定差（設1=3.8%→設6=9.6%）。実測は記録タブの殲滅ゾーン入力からカウンタータブで集計されます。</p></div></div>';
+
+  h+='<div class="card"><div class="ct">🏯 CZ失敗後 モード移行率</div>';
+  h+=infoTbl('通常A',['設1','設2','設3','設4','設5','設6'],MODE_A,'%');
+  h+=infoTbl('通常B',['設1','設2','設3','設4','設5','設6'],MODE_B,'%');
+  h+=infoTbl('通常C',['設1','設2','設3','設4','設5','設6'],MODE_C,'%');
+  h+=infoTbl('通常D',['設1','設2','設3','設4','設5','設6'],MODE_D,'%');
+  h+='<div class="ib"><p>通常A偏り＝低設定（設1=50%）、通常D偏り＝高設定（設6=30%）。CZ後モードは記録タブで記録するとカウンタータブで設定推定されます。</p></div></div>';
+
+  h+='<div class="card"><div class="ct">🏆 サミートロフィー</div>';
+  h+='<table class="itbl"><tr><th>色</th><th>示唆</th></tr>';
+  h+='<tr><td class="k">銅</td><td>設2以上</td></tr><tr><td class="k">銀</td><td>設3以上</td></tr><tr><td class="k">金</td><td class="h">設4以上</td></tr><tr><td class="k">キリン柄</td><td class="h">設5以上</td></tr><tr><td class="k">虹</td><td class="h">設6確定</td></tr>';
+  h+='</table><div class="ib"><p>AT/上位AT/ED終了時に出現可能性。朝一は出現率上昇の可能性あり（同社傾向）。</p></div></div>';
+
+  h+='<div class="card"><div class="ct">🖼️ CZ終了画面</div>';
+  h+='<table class="itbl"><tr><th>画面</th><th>示唆</th></tr>';
+  h+='<tr><td class="k">青空のみ</td><td>デフォルト</td></tr>';
+  h+='<tr><td class="k">青空+笑い男</td><td>復活期待50%</td></tr>';
+  h+='<tr><td class="k">青空+公安9課</td><td>設2以上</td></tr>';
+  h+='<tr><td class="k">オペ子</td><td>奇数</td></tr>';
+  h+='<tr><td class="k">タチコマ</td><td>偶数</td></tr>';
+  h+='<tr><td class="k">トグサ</td><td>高設定弱</td></tr>';
+  h+='<tr><td class="k">イシカワ</td><td>高設定強</td></tr>';
+  h+='<tr><td class="k">素子</td><td>設1456+高強</td></tr>';
+  h+='<tr><td class="k">バカンス</td><td class="h">設4以上</td></tr>';
+  h+='<tr><td class="k">全員集合(金)</td><td class="h">設6確定</td></tr>';
+  h+='</table><div class="ib"><p>CZ終了時は<span class="em">PUSHボタン押下</span>で一枚絵が出現。</p></div></div>';
+
+  h+='<div class="card"><div class="ct">🖼️ AT終了画面 / 一枚絵</div>';
+  h+='<table class="itbl"><tr><th>画面</th><th>示唆</th></tr>';
+  h+='<tr><td class="k">素子</td><td>デフォルト</td></tr>';
+  h+='<tr><td class="k">素子＆タチコマ</td><td>高設定弱</td></tr>';
+  h+='<tr><td class="k">トグサ</td><td>奇数</td></tr>';
+  h+='<tr><td class="k">バトー</td><td>偶数</td></tr>';
+  h+='<tr><td class="k">ポーカー</td><td>高モード</td></tr>';
+  h+='<tr><td class="k">素子の後ろ姿</td><td>モードB以上</td></tr>';
+  h+='<tr><td class="k">公安9課</td><td>モードC以上</td></tr>';
+  h+='<tr><td class="k">電脳素子</td><td>モードC以上+D期待</td></tr>';
+  h+='<tr><td class="k">アオイ(金)</td><td class="h">モードD+設4以上</td></tr>';
+  h+='<tr><td class="k">2nd GIG</td><td>白の境界 権利保有</td></tr>';
+  h+='</table><div class="ib"><p>出現：AT終了時／CZ終了時PUSH／通常77G以降に<span class="em">左停止7回</span>。</p></div></div>';
+
+  h+='<div class="card"><div class="ct">🌈 エンディング上パネル</div>';
+  h+='<table class="itbl"><tr><th>色</th><th>示唆</th></tr>';
+  h+='<tr><td class="k">青</td><td>奇数</td></tr><tr><td class="k">黄</td><td>偶数</td></tr><tr><td class="k">緑</td><td>奇数+高</td></tr><tr><td class="k">赤</td><td>偶数+高</td></tr><tr><td class="k">紫</td><td>設2以上</td></tr><tr><td class="k">虹</td><td class="h">設6確定</td></tr>';
+  h+='</table><div class="ib"><p>ED中レア小役でPUSH→上パネル変化。精度は弱レア役＜強レア役。</p></div></div>';
+
+  h+='<div class="card"><div class="ct">🎭 S.A.M.エピソード</div>';
+  h+='<div class="ib"><p>「暴走の証明」と「恵まれし者たち」が基本<span class="em2">交互</span>に出現。<span class="em">同一エピソードが2連続で設2以上濃厚</span>。CZタチコマやATを挟んでも有効。</p></div></div>';
+
+  h+='<div class="note">出典：なな徹／一撃／DMMぱちタウン／ちょんぼりすた 等の公開解析を照合（2026年）。実戦値・調査中項目を含むため最終判断は自己責任で。</div>';
+  return h;
+}
+function infoTbl(name,heads,vals,unit){
+  var h='<div style="margin-bottom:10px"><div style="font-size:11.5px;font-weight:700;color:#9fe9dd;margin-bottom:4px">'+esc(name)+'</div>';
+  h+='<table class="itbl"><tr>';
+  for(var i=0;i<heads.length;i++) h+='<th>'+esc(heads[i])+'</th>';
+  h+='</tr><tr>';
+  for(var j=0;j<vals.length;j++) h+='<td class="'+(j>=3?'h':'')+'">'+vals[j].toFixed(1)+(unit||'')+'</td>';
+  h+='</tr></table></div>';
+  return h;
+}
+
+/* ---------- 出力タブ ---------- */
+function rExp(){
+  var st=stats(), cf=confirmedMin();
+  var lines=[];
+  lines.push('=== スマスロ攻殻機動隊 実戦データ ===');
+  lines.push('総G数: '+(st.totGall||0));
+  lines.push('CZ: '+(st.czN||0)+'回'+(st.czN&&st.totGall?(' (1/'+Math.round(st.totGall/st.czN)+')'):''));
+  lines.push('AT: '+(st.atN||0)+'回'+(st.atN&&st.totGall?(' (1/'+Math.round(st.totGall/st.atN)+')'):''));
+  if(st.tachiTry) lines.push('タチコマ家出: '+st.tachiHit+'/'+st.tachiTry+' ('+(st.tachiHit/st.tachiTry*100).toFixed(1)+'%)');
+  if(st.stkTry) lines.push('引き戻しストック: '+st.stkHit+'/'+st.stkTry+' ('+(st.stkHit/st.stkTry*100).toFixed(1)+'%)');
+  if(st.chouTry) lines.push('超高確スタート: '+st.chouHit+'/'+st.chouTry);
+  if(st.hackDenom) lines.push('視覚HACK率: '+st.hackN+'/'+st.hackDenom+' ('+(st.hackN/st.hackDenom*100).toFixed(1)+'%) ※分母=CZ失敗+S9M失敗+電脳MODE終了');
+  else if(st.hackN) lines.push('視覚HACK発生: '+st.hackN+'回');
+  if(cf.reasons.length){ lines.push(''); lines.push('【設定示唆】'); cf.reasons.forEach(function(r){lines.push('・'+r);}); }
+  var tro=[];['tr_dou:銅','tr_gin:銀','tr_kin:金','tr_kirin:キリン','tr_niji:虹'].forEach(function(x){var p=x.split(':');if(cc(p[0]))tro.push(p[1]+'×'+cc(p[0]));});
+  if(tro.length) lines.push('トロフィー: '+tro.join(' '));
+  lines.push('');
+  lines.push('--- 履歴('+LOG.length+'件) ---');
+  for(var i=0;i<LOG.length;i++){
+    var e=LOG[i], m=evMeta(e.ev);
+    var parts=[m[1]]; if(typeof e.g==='number'&&e.g>0)parts.push(e.g+'G');
+    if(e.cztrig)parts.push(e.cztrig); if(e.res)parts.push({s:'成功',f:'失敗',choku:'AT直撃'}[e.res]||e.res); if(e.tachi)parts.push(e.tachi);
+    if(e.ztable)parts.push('T'+e.ztable); if(e.kill!=null&&e.kill!=='')parts.push(e.kill+'体'); if(e.zchance)parts.push(e.zchance==='niji'?'HYPER':'殲滅CH');
+    if(e.samstage)parts.push('St'+e.samstage); if(e.s9mep)parts.push(e.s9mep);
+    if(e.stk!=null&&e.stk!=='')parts.push('ストック'+e.stk);
+    if(e.endscr)parts.push('画面:'+scrName(e.endscr)); if(e.czscr)parts.push('CZ画面:'+scrName(e.czscr)); if(e.edp)parts.push('パネル:'+scrName(e.edp));
+    if(e.note)parts.push(e.note);
+    lines.push((i+1)+'. '+parts.join(' / '));
+  }
+  var txt=lines.join('\n');
+  var h='<div class="card"><div class="ct">📤 データ出力</div>';
+  h+='<div class="sub">テキストをコピーしてメモ/SNS等へ。長押しで全選択できます。</div>';
+  h+='<textarea class="exp-ta" id="expTa" readonly>'+esc(txt)+'</textarea>';
+  h+='<div class="btn2"><button class="bcopy" data-a="copy">📋 コピー</button><button class="brst" data-a="reset">🗑️ 全データ削除</button></div>';
+  h+='</div>';
+  h+='<div class="note">データはこの端末のブラウザ内（localStorage）にのみ保存されます。<br>キャッシュ削除や別端末では引き継がれません。</div>';
+  return h;
+}
+
+/* ============ 入力処理 ============ */
+function addEntry(){
+  if(!cur.ev) return;
+  var ev=cur.ev;
+  // 各フィールドを使うイベントを限定（前の選択が別イベントに混入するのを防ぐ）
+  var useCztrig = (ev==='cz'||ev==='chou'||ev==='tachisign');
+  var useTachi  = (ev==='zone');
+  var useRes    = (ev==='cz'||ev==='s9m'||ev==='haku'||ev==='zone'||ev==='chou'||ev==='czmode'||ev==='tachisign'||ev==='kanban');
+  var useEndscr = ((ev==='cz'&&cur.res==='f')||ev==='end'||ev==='other');
+  var useCzscr  = (ev==='other');
+  var useEdp    = (ev==='end'||ev==='other');
+  var useStk    = (ev==='rush');
+  var useZinfo  = (ev==='zone'); // ztable/kill/zchance
+  var useSamSt  = (ev==='cz'&&cur.cztrig==='sam');
+  var useS9mep  = (ev==='s9m');
+  var e={ ev:ev };
+  var g=parseInt(cur.g,10); if(!isNaN(g)&&g>0) e.g=g;
+  if(useRes && cur.res) e.res=cur.res;
+  if(useCztrig && cur.cztrig) e.cztrig=cur.cztrig;
+  if(useTachi && cur.tachi) e.tachi=cur.tachi;
+  if(useEndscr && cur.endscr) e.endscr=cur.endscr;
+  if(useCzscr && cur.czscr) e.czscr=cur.czscr;
+  if(useEdp && cur.edp) e.edp=cur.edp;
+  if(useStk && cur.stk!=='') e.stk=cur.stk;
+  if(useZinfo && cur.ztable) e.ztable=cur.ztable;
+  if(useZinfo){ var kl=parseInt(cur.kill,10); if(!isNaN(kl)&&kl>0) e.kill=kl; }
+  if(useZinfo && cur.zchance) e.zchance=cur.zchance;
+  if(useSamSt && cur.samstage) e.samstage=cur.samstage;
+  if(useS9mep && cur.s9mep) e.s9mep=cur.s9mep;
+  if(cur.note) e.note=cur.note.slice(0,200);
+  LOG.push(e);
+
+  // 画面・アイキャッチ選択 → 設定示唆カウンターへ自動加算
+  function mapAtScr(val){ return ({motoko_tachi:'end_motoko_tachi',togusa:'end_togusa',batou:'end_batou',aoi:'end_aoi'})[val]||null; }
+  function mapCzScr(val){ return ({kouan:'cz_kouan',opeko:'cz_opeko',tachikoma:'cz_tachi',togusa:'cz_togusa',ishikawa:'cz_ishi',motoko:'cz_motoko',vacance:'cz_vacance',zenin:'cz_zenin'})[val]||null; }
+  function mapEdp(val){ return ({ao:'ed_ao',ki:'ed_ki',midori:'ed_midori',aka:'ed_aka',murasaki:'ed_murasaki',niji:'ed_niji'})[val]||null; }
+  // endscr：CZイベントはCZ画面、それ以外はAT画面として扱う（useフラグを尊重）
+  if(useEndscr && cur.endscr){
+    var sk = (ev==='cz') ? mapCzScr(cur.endscr) : mapAtScr(cur.endscr);
+    if(sk) incSilent(sk,1);
+  }
+  if(useCzscr && cur.czscr){ var ck=mapCzScr(cur.czscr); if(ck) incSilent(ck,1); }
+  if(useEdp && cur.edp){ var ek=mapEdp(cur.edp); if(ek) incSilent(ek,1); }
+
+  cur={ev:'',g:'',res:'',cztrig:'',tachi:'',note:'',endscr:'',czscr:'',edp:'',stk:'',kill:'',ztable:'',zchance:'',samstage:'',tachipt:'',s9mep:'',sam:''};
+  save(); render();
+}
+function incSilent(k,d){ CC[k]=Math.max(0,(CC[k]||0)+d); }
+
+function doReset(){
+  CC={};LOG=[];inAT=false;
+  try{ localStorage.removeItem(SK+'c');localStorage.removeItem(SK+'l');localStorage.removeItem(SK+'s'); }catch(e){}
+  cur={ev:'',g:'',res:'',cztrig:'',tachi:'',note:'',endscr:'',czscr:'',edp:'',stk:'',kill:'',ztable:'',zchance:'',samstage:'',tachipt:'',s9mep:'',sam:''};
+  render();
+}
+
+/* ============ イベント委譲 ============ */
+document.addEventListener('click', function(ev){
+  var t=ev.target.closest('[data-tab],[data-ev],[data-seg],[data-a],[data-cm],[data-cp],[data-del]');
+  if(!t) return;
+  if(t.dataset.tab){ curTab=t.dataset.tab; render(); return; }
+  if(t.dataset.ev!=null){
+    var nv=t.dataset.ev;
+    if(cur.ev===nv){ cur.ev=''; }
+    else { cur.ev=nv; }
+    // イベントを切り替えたら前イベントの選択肢をクリア（混入防止。G数とメモは維持）
+    cur.res=''; cur.cztrig=''; cur.tachi=''; cur.endscr=''; cur.czscr=''; cur.edp=''; cur.stk=''; cur.kill=''; cur.ztable=''; cur.zchance=''; cur.samstage=''; cur.tachipt=''; cur.s9mep='';
+    render(); return;
+  }
+  if(t.dataset.seg){ var g=t.dataset.seg,v=t.dataset.val; cur[g]=(cur[g]===v?'':v); render(); return; }
+  if(t.dataset.cm){ inc(t.dataset.cm,-1); return; }
+  if(t.dataset.cp){ inc(t.dataset.cp,1); return; }
+  if(t.dataset.del!=null){ var i=parseInt(t.dataset.del,10); if(!isNaN(i)){ LOG.splice(i,1); save(); render(); } return; }
+  if(t.dataset.a==='evchange'){
+    cur.ev=''; cur.res=''; cur.cztrig=''; cur.tachi=''; cur.endscr=''; cur.czscr=''; cur.edp=''; cur.stk=''; cur.kill=''; cur.ztable=''; cur.zchance=''; cur.samstage=''; cur.tachipt=''; cur.s9mep='';
+    render(); return;
+  }
+  if(t.dataset.a==='add'){ addEntry(); return; }
+  if(t.dataset.a==='copy'){
+    var ta=$('#expTa'); if(ta){ ta.select(); try{document.execCommand('copy');}catch(e){} if(navigator.clipboard){try{navigator.clipboard.writeText(ta.value);}catch(e){}} t.textContent='✅ コピー完了'; setTimeout(function(){t.textContent='📋 コピー';},1500);} return;
+  }
+  if(t.dataset.a==='reset'){
+    var mb=document.getElementById('resetModal');
+    if(mb) mb.style.display='flex';
+    return;
+  }
+  if(t.dataset.a==='reset-cancel'){
+    var mb2=document.getElementById('resetModal');
+    if(mb2) mb2.style.display='none';
+    return;
+  }
+  if(t.dataset.a==='reset-confirm'){
+    var mb3=document.getElementById('resetModal');
+    if(mb3) mb3.style.display='none';
+    doReset();
+    return;
+  }
+});
+document.addEventListener('input', function(ev){
+  var t=ev.target;
+  if(t.id==='iG'){ cur.g=t.value; }
+  else if(t.id==='iNote'){ cur.note=t.value; }
+  else if(t.id==='iKill'){ cur.kill=t.value; }
+});
+
+/* ============ 起動 ============ */
+// モーダル背景（カード外）タップで閉じる
+(function(){
+  var mb=document.getElementById('resetModal');
+  if(mb) mb.addEventListener('click', function(ev){
+    if(ev.target===mb) mb.style.display='none';
+  });
+})();
+load();
+render();
+
+</script>
+</body>
+</html>
