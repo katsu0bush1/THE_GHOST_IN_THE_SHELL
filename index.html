@@ -247,7 +247,7 @@ var CC = {}; // カウンター値
 var LOG = [];
 var inAT = false;
 // 記録タブの一時入力
-var cur = { ev:'', g:'', res:'', cztrig:'', tachi:'', note:'', endscr:'', czscr:'', edp:'', stk:'', kill:'', ztable:'', zchance:'', samstage:'', tachipt:'', s9mep:'', sam:'' };
+var cur = { ev:'', g:'', res:'', cztrig:'', tachi:'', note:'', endscr:'', czscr:'', edp:'', eye:'', stk:'', kill:'', ztable:'', zchance:'', samstage:'', tachipt:'', s9mep:'', mai:'', level:'', sam:'' };
 var curTab = 'rec';
 
 /* ---- ユーティリティ ---- */
@@ -449,17 +449,20 @@ var EVENTS=[
   {k:'czmode', n:'CZ後モード', s:'失敗後の移行', g:'通常時'},
   {k:'tachisign', n:'タチコマ示唆', s:'SAM出現期待', g:'通常時'},
   {k:'kanban', n:'タチコマ看板', s:'pt示唆(色)', g:'通常時'},
+  {k:'eyecatch', n:'アイキャッチ', s:'ステージチェンジ', g:'通常時'},
   {k:'chou', n:'高確/超高確', s:'設定変更/AT後', g:'通常時'},
   // AT・上位
   {k:'at', n:'AT開始', s:'S.A.C.モード', g:'AT・上位'},
+  {k:'bonus', n:'S.A.C.ボーナス', s:'RED/BLUE', g:'AT・上位'},
   {k:'s9m', n:'S9M', s:'SECTION9', g:'AT・上位'},
-  {k:'haku', n:'白の境界', s:'上位CZ', g:'AT・上位'},
-  {k:'rush', n:'電脳RUSH', s:'上位AT', g:'AT・上位'},
   {k:'denno', n:'電脳MODE', s:'上乗せ特化', g:'AT・上位'},
+  {k:'rush', n:'電脳RUSH', s:'上乗せ特化', g:'AT・上位'},
+  {k:'hakuc', n:'白の境界CH', s:'枚数到達CZ', g:'AT・上位'},
+  {k:'haku', n:'白の境界', s:'上位CZ', g:'AT・上位'},
+  {k:'reboot', n:'リブートチャンス', s:'引き戻し', g:'AT・上位'},
   {k:'end', n:'AT/ED終了', s:'終了画面確認', g:'AT・上位'},
   // その他
   {k:'hack', n:'視覚HACK', s:'失敗→復活', g:'その他'},
-  {k:'choku', n:'AT直撃', s:'レア役等', g:'その他'},
   {k:'other', n:'その他', s:'メモ', g:'その他'}
 ];
 // CZ終了画面（PUSHで出現する一枚絵・設定示唆）
@@ -496,6 +499,15 @@ var ED_PANEL=[
   {v:'aka', n:'赤', h:'偶数+高'},
   {v:'murasaki', n:'紫', h:'設2↑'},
   {v:'niji', n:'虹', h:'設6'}
+];
+// アイキャッチ（ステージチェンジ）：殲滅ゾーン突入回数・モードD示唆（全6種）
+var EYECATCH=[
+  {v:'default', n:'デフォルト', h:'示唆なし'},
+  {v:'motoko', n:'素子', h:'殲滅ゾーン1回以上'},
+  {v:'tachikoma', n:'タチコマ', h:'SAM保有/モードD期待(弱)'},
+  {v:'three', n:'3人＋タチコマ', h:'殲滅ゾーン複数 or モードD'},
+  {v:'gig', n:'2nd GIG', h:'殲滅ゾーン複数 or モードD（強）'},
+  {v:'aoi', n:'アオイ', h:'殲滅テーブル4以上濃厚'}
 ];
 function rRec(){
   var h='';
@@ -554,9 +566,10 @@ function rRec(){
     }else{
       h+=resSeg('成否');
     }
-    // 失敗を選んだ場合のみ終了画面（PUSHで一枚絵）を表示
+    // 失敗を選んだ場合のみ終了画面（PUSHで一枚絵）＋アイキャッチを表示
     if(cur.res==='f'){
-      h+=scrPick('CZ終了画面（PUSHで一枚絵）', CZ_SCR);
+      h+=scrPick('① CZ終了画面（一枚絵・設定/モード示唆）', CZ_SCR);
+      h+=scrPick('② アイキャッチ（殲滅ゾーン回数/モード示唆）', EYECATCH, 'eye');
     }
     // S.A.M.のステージ（1〜4・ステージ4到達で成功濃厚）
     if(cur.cztrig==='sam'){
@@ -576,9 +589,23 @@ function rRec(){
     h+='<div class="sub" style="margin-top:6px">※エピソードは4種（青/黄/緑/赤）。選択率は全設定共通で設定差なし。緑/赤は回胴HACK発生期待度が高い。失敗はHACK率の分母になります。</div>';
   }else if(cur.ev==='at'){
     h+='<div class="sub" style="margin-top:6px">※AT開始を記録。引き戻しストックはカウンタータブで管理できます。</div>';
+  }else if(cur.ev==='bonus'){
+    h+='<div class="fld"><div class="fl">種別（20G擬似ボーナス・AT確定）</div><div class="seg">';
+    h+=so('res','red','RED(赤7)','c-aka');
+    h+=so('res','blue','BLUE(青7)','c-ao');
+    h+='</div></div>';
+    h+='<div class="sub" style="margin-top:6px">※S.A.C.ボーナス。殲滅チャンス当選時やCZ成功の一部などで当選しAT確定。REDは電脳MODE、BLUEは電脳MODE超特A級を経由してATへ。性能差はなし。</div>';
   }else if(cur.ev==='denno'){
-    h+='<div class="sub" style="margin-top:6px">※上乗せ特化「電脳MODE」。終了でHACK率の分母に+1されます（失敗概念なし）。</div>';
+    h+='<div class="fld"><div class="fl">種別</div><div class="seg">';
+    h+=so('res','normal','電脳MODE');
+    h+=so('res','choutoku','超特A級','win');
+    h+='</div></div>';
+    h+='<div class="sub" style="margin-top:6px">※差枚数上乗せ特化「電脳MODE」。青7ナビ高確でマルチHACK上乗せ。超特A級は上位特化（青7ボーナス/押し順HACK青7/ロングフリーズ契機）でレア役成立時点で衝撃HACK以上濃厚。終了でHACK率の分母に+1されます（失敗概念なし）。</div>';
   }else if(cur.ev==='zone'){
+    h+='<div class="fld"><div class="fl">突入契機</div><div class="seg">';
+    h+=so('cztrig','game','規定G数');
+    h+=so('cztrig','point','殲滅ポイント');
+    h+='</div></div>';
     h+='<div class="fld"><div class="fl">発展したマスの色</div><div class="seg">';
     h+=so('tachi','white','白〜紫');
     h+=so('tachi','blue','青','c-ao');
@@ -649,30 +676,52 @@ function rRec(){
     h+=so('res','chou','超高確','win');
     h+='</div></div>';
     h+='<div class="sub" style="margin-top:6px">※設定変更/AT終了後の内部状態。超高確スタート率に設定差あり（設1=2.5%→設6=4.6%）。カウンタータブで集計されます。</div>';
+  }else if(cur.ev==='hakuc'){
+    h+=resSeg('成否');
+    h+='<div class="fld"><div class="fl">白の境界レベル（成功回数で上昇・最大3）</div><div class="seg">';
+    h+=so('level','1','Lv1');
+    h+=so('level','2','Lv2','win');
+    h+=so('level','3','Lv3','win');
+    h+='</div></div>';
+    h+='<div class="fld"><div class="fl">突入時の獲得枚数（任意）</div><div class="seg">';
+    h+=so('cztrig','m100','100枚');
+    h+=so('cztrig','m300','300枚');
+    h+=so('cztrig','m500','500枚');
+    h+='</div></div>';
+    h+='<div class="sub" style="margin-top:6px">※AT中の規定枚数（500枚で必ず/100・300枚でも）到達で突入する上位CZ「白の境界」の権利獲得CZ。成功回数でレベルUP（最大3）。同一AT5回成功で9th PERSON濃厚。</div>';
   }else if(cur.ev==='haku'){
     h+=resSeg('突破');
-    h+='<div class="sub" style="margin-top:6px">※上位CZ「白の境界」。成功で電脳RUSH（上位AT）へ。</div>';
-  }else if(cur.ev==='rush'){
-    h+='<div class="fld"><div class="fl">獲得ストック数</div><div class="seg">';
-    h+=so('stk','0','0個');
-    h+=so('stk','1','1個');
-    h+=so('stk','2','2個');
-    h+=so('stk','3','3個+');
+    h+='<div class="fld"><div class="fl">白の境界レベル（任意）</div><div class="seg">';
+    h+=so('level','1','Lv1');
+    h+=so('level','2','Lv2','win');
+    h+=so('level','3','Lv3','win');
     h+='</div></div>';
-    h+='<div class="sub" style="margin-top:6px">※上位AT「電脳RUSH」突入を記録。純増約8.5枚/G。ストック数を記録すると引き戻しストックの集計に反映されます。</div>';
+    h+='<div class="sub" style="margin-top:6px">※上位CZ「白の境界」。5G間でリールロック3段階orレア役で成功→上位AT「ENDLESS GIG」へ。レベルが高いほど成功期待度UP（上位AT後はLv3固定で約75%ループ）。</div>';
+  }else if(cur.ev==='reboot'){
+    h+=resSeg('引き戻し成否');
+    h+='<div class="fld"><div class="fl">引き戻しストック（1G目PUSH告知）</div><div class="seg">';
+    h+=so('stk','0','0個');
+    h+=so('stk','1','1個','win');
+    h+=so('stk','2','2個','win');
+    h+=so('stk','3','3個+','win');
+    h+='</div></div>';
+    h+='<div class="sub" style="margin-top:6px">※AT終了後の引き戻しゾーン（5G）。レア役で引き戻し濃厚。ストック所持時は1G目PUSH告知。ストック当選率は高設定優遇（設定差あり）。成功で電脳RUSHへ。</div>';
+  }else if(cur.ev==='rush'){
+    h+='<div class="fld"><div class="fl">獲得枚数（任意）</div>';
+    h+='<input id="iMai" type="number" inputmode="numeric" placeholder="上乗せ枚数" value="'+esc(cur.mai)+'" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:11px 13px;color:#eaf6f3;font-size:16px;font-weight:700;font-family:\'SF Mono\',ui-monospace,monospace;outline:none"></div>';
+    h+='<div class="sub" style="margin-top:6px">※上乗せ特化ゾーン「電脳RUSH（電脳ラッシュ）」。3G/セット継続型、平均約165枚（100枚保証）。継続レベル3は77%継続。ここでの上乗せがAT復帰後の初期枚数になります。</div>';
   }else if(cur.ev==='end'){
-    h+=scrPick('AT/ED終了画面・アイキャッチ', AT_SCR);
+    h+=scrPick('① AT/ED終了画面（一枚絵・設定/モード示唆）', AT_SCR);
+    h+=scrPick('② アイキャッチ（殲滅ゾーン回数/モード示唆）', EYECATCH, 'eye');
     h+=scrPick('エンディング上パネル', ED_PANEL, 'edp');
-    h+='<div class="sub" style="margin-top:6px">※AT終了時・CZ終了時PUSH・通常77G以降の裏コマ(左停止7回)で確認。</div>';
+    h+='<div class="sub" style="margin-top:6px">※一枚絵は主に設定/モードを示唆（赤/紫/金枠で高モード）。アイキャッチ（ステージチェンジ）は殲滅ゾーン突入回数やモードDを示唆。アオイはテーブル4以上/モードD濃厚。AT終了時・CZ終了時PUSH・通常77G以降の裏コマで確認。</div>';
+  }else if(cur.ev==='eyecatch'){
+    h+=scrPick('アイキャッチ（ステージチェンジ）', EYECATCH, 'eye');
+    h+='<div class="sub" style="margin-top:6px">※ステージチェンジ時のアイキャッチを記録。当該モードの殲滅ゾーン突入回数（ゲーム数契機）やモードDを示唆。アオイ出現時は次回殲滅ゾーンのテーブル4以上＝モードD濃厚。実戦上はCZ/AT終了時のほか、殲滅ゾーン終了後の屋上ステージ移行などで確認できます。</div>';
   }else if(cur.ev==='hack'){
     h+='<div class="sub" style="margin-top:6px">※視覚HACK＝CZ等の失敗→終了画面の次GにアオイがリールHACK→AT。記録すると上部のHACK率の分子に+1されます。</div>';
-  }else if(cur.ev==='choku'){
-    h+='<div class="sub" style="margin-top:6px">※レア役などからのAT直撃を記録。</div>';
   }else if(cur.ev==='other'){
-    h+=scrPick('AT/ED終了画面・アイキャッチ', AT_SCR);
-    h+=scrPick('CZ終了画面', CZ_SCR, 'czscr');
-    h+=scrPick('エンディング上パネル', ED_PANEL, 'edp');
-    h+='<div class="sub" style="margin-top:6px">※その他のタイミングで確認したアイキャッチ・画面を自由に記録できます。設定示唆は自動でヘッダに反映されます。</div>';
+    h+='<div class="sub" style="margin-top:6px">※自由メモ。下のメモ欄に所感・状況などを記録できます。</div>';
   }
   // メモ
   h+='<div class="fld"><div class="fl">メモ（任意）</div><textarea id="iNote" rows="2" placeholder="ステージ・示唆・所感など">'+esc(cur.note)+'</textarea></div>';
@@ -682,7 +731,7 @@ function rRec(){
   // 直近ログのミニ表示
   if(LOG.length){
     h+='<div class="card"><div class="ct">直近の記録</div>';
-    for(var i=LOG.length-1;i>=Math.max(0,LOG.length-4);i--){ h+=tlItem(LOG[i],i,true); }
+    for(var i=LOG.length-1;i>=Math.max(0,LOG.length-4);i--){ h+=tlItem(LOG[i],i,false); }
     h+='</div>';
   }
   return h;
@@ -885,13 +934,13 @@ function rNav(){
 
 /* ---------- 履歴タブ ---------- */
 function evMeta(k){
-  var m={cz:['🛰️','CZ'],czmode:['🏯','CZ後モード'],tachisign:['🤖','タチコマ示唆'],kanban:['🪧','タチコマ看板'],chou:['🔵','高確/超高確'],s9m:['🎯','S9M'],at:['🎰','AT開始'],denno:['💠','電脳MODE'],zone:['🟦','殲滅ゾーン'],haku:['⚪','白の境界'],rush:['🌀','電脳RUSH'],end:['🖼️','終了画面'],hack:['👁️','視覚HACK'],choku:['⚡','AT直撃'],other:['📝','メモ']};
+  var m={cz:['🛰️','CZ'],czmode:['🏯','CZ後モード'],tachisign:['🤖','タチコマ示唆'],kanban:['🪧','タチコマ看板'],chou:['🔵','高確/超高確'],s9m:['🎯','S9M'],at:['🎰','AT開始'],bonus:['🎲','S.A.C.ボーナス'],hakuc:['⚔️','白の境界CH'],haku:['⚪','白の境界'],reboot:['🔄','リブートチャンス'],denno:['💠','電脳MODE'],zone:['🟦','殲滅ゾーン'],rush:['🌀','電脳RUSH'],end:['🖼️','終了画面'],eyecatch:['🎬','アイキャッチ'],hack:['👁️','視覚HACK'],other:['📝','メモ']};
   return m[k]||['•',k];
 }
 // 画面値→表示名（CZ_SCR/AT_SCR/ED_PANEL横断）
 function scrName(v){
   if(!v) return '';
-  var all=CZ_SCR.concat(AT_SCR).concat(ED_PANEL);
+  var all=CZ_SCR.concat(AT_SCR).concat(ED_PANEL).concat(EYECATCH);
   for(var i=0;i<all.length;i++) if(all[i].v===v) return all[i].n;
   return v;
 }
@@ -900,6 +949,8 @@ function tlItem(e,i,mini){
   var sub=[];
   if(e.cztrig){
     if(e.ev==='tachisign'){ var tz={g200:'200手前',g400:'400手前'}; sub.push(tz[e.cztrig]||e.cztrig); }
+    else if(e.ev==='zone'){ var zt={game:'規定G数',point:'殲滅pt'}; sub.push(zt[e.cztrig]||e.cztrig); }
+    else if(e.ev==='hakuc'){ var hm={m100:'100枚',m300:'300枚',m500:'500枚'}; sub.push(hm[e.cztrig]||e.cztrig); }
     else { var ct={normal:'通常',g200:'200G',g400:'400G',sam:'S.A.M.',kakutei:'確定',hosyou:'白境界後',henkou:'設定変更後',atend:'AT終了後'}; sub.push(ct[e.cztrig]||e.cztrig); }
   }
   if(e.tachi){ var tc={white:'白〜紫',blue:'青',green:'緑',red:'赤',hit:'当選'}; sub.push('マス:'+(tc[e.tachi]||e.tachi)); }
@@ -908,9 +959,13 @@ function tlItem(e,i,mini){
     else if(e.ev==='czmode'){ var ms={a:'通常A',b:'通常B',c:'通常C',d:'通常D'}; sub.push(ms[e.res]||e.res); }
     else if(e.ev==='tachisign'){ var ts={tension:'てんしょんあっぷ',meisai:'光学迷彩10体超',kyokudai:'極大タチコマ',panel:'パネル完成煽り'}; sub.push('🤖'+(ts[e.res]||e.res)); }
     else if(e.ev==='kanban'){ var kb={ao:'🔵青',midori:'🟢緑',aka:'🔴赤'}; sub.push('看板'+(kb[e.res]||e.res)); }
+    else if(e.ev==='denno'){ var dn={normal:'電脳MODE',choutoku:'⚡超特A級'}; sub.push(dn[e.res]||e.res); }
+    else if(e.ev==='bonus'){ var bn={red:'🔴RED',blue:'🔵BLUE'}; sub.push('ボーナス'+(bn[e.res]||e.res)); }
     else if(e.ev==='cz' && (e.cztrig==='g200'||e.cztrig==='g400')){ sub.push(e.res==='s'?'⚡発展':'➡️スルー'); }
     else { var rl={s:'✅成功',f:'❌失敗',choku:'⚡AT直撃'}; sub.push(rl[e.res]||e.res); }
   }
+  if(e.level){ sub.push('Lv'+e.level); }
+  if(e.mai!=null && e.mai!=='') sub.push(e.mai+'枚');
   if(e.samstage){ sub.push('St'+e.samstage); }
   if(e.s9mep){ var ep={mohou:'模倣者(青)',okizari:'置き去り(黄)',kojo:'孤城落日(緑)',shoen:'硝煙弾雨(赤)'}; sub.push('EP:'+(ep[e.s9mep]||e.s9mep)); }
   if(e.ztable){ sub.push('T'+e.ztable); }
@@ -919,6 +974,7 @@ function tlItem(e,i,mini){
   if(e.stk!=null && e.stk!=='') sub.push('ストック'+e.stk+'個');
   if(e.endscr){ sub.push('🖼'+scrName(e.endscr)); }
   if(e.czscr){ sub.push('🖼CZ:'+scrName(e.czscr)); }
+  if(e.eye){ sub.push('🎬'+scrName(e.eye)); }
   if(e.edp){ sub.push('パネル:'+scrName(e.edp)); }
   if(e.note) sub.push(esc(e.note));
   var h='<div class="tli">';
@@ -1046,8 +1102,9 @@ function rExp(){
     if(e.cztrig)parts.push(e.cztrig); if(e.res)parts.push({s:'成功',f:'失敗',choku:'AT直撃'}[e.res]||e.res); if(e.tachi)parts.push(e.tachi);
     if(e.ztable)parts.push('T'+e.ztable); if(e.kill!=null&&e.kill!=='')parts.push(e.kill+'体'); if(e.zchance)parts.push(e.zchance==='niji'?'HYPER':'殲滅CH');
     if(e.samstage)parts.push('St'+e.samstage); if(e.s9mep)parts.push(e.s9mep);
+    if(e.level)parts.push('Lv'+e.level); if(e.mai!=null&&e.mai!=='')parts.push(e.mai+'枚');
     if(e.stk!=null&&e.stk!=='')parts.push('ストック'+e.stk);
-    if(e.endscr)parts.push('画面:'+scrName(e.endscr)); if(e.czscr)parts.push('CZ画面:'+scrName(e.czscr)); if(e.edp)parts.push('パネル:'+scrName(e.edp));
+    if(e.endscr)parts.push('画面:'+scrName(e.endscr)); if(e.czscr)parts.push('CZ画面:'+scrName(e.czscr)); if(e.eye)parts.push('アイキャッチ:'+scrName(e.eye)); if(e.edp)parts.push('パネル:'+scrName(e.edp));
     if(e.note)parts.push(e.note);
     lines.push((i+1)+'. '+parts.join(' / '));
   }
@@ -1066,16 +1123,19 @@ function addEntry(){
   if(!cur.ev) return;
   var ev=cur.ev;
   // 各フィールドを使うイベントを限定（前の選択が別イベントに混入するのを防ぐ）
-  var useCztrig = (ev==='cz'||ev==='chou'||ev==='tachisign');
+  var useCztrig = (ev==='cz'||ev==='chou'||ev==='tachisign'||ev==='zone'||ev==='hakuc');
   var useTachi  = (ev==='zone');
-  var useRes    = (ev==='cz'||ev==='s9m'||ev==='haku'||ev==='zone'||ev==='chou'||ev==='czmode'||ev==='tachisign'||ev==='kanban');
-  var useEndscr = ((ev==='cz'&&cur.res==='f')||ev==='end'||ev==='other');
-  var useCzscr  = (ev==='other');
-  var useEdp    = (ev==='end'||ev==='other');
-  var useStk    = (ev==='rush');
+  var useRes    = (ev==='cz'||ev==='s9m'||ev==='haku'||ev==='zone'||ev==='chou'||ev==='czmode'||ev==='tachisign'||ev==='kanban'||ev==='hakuc'||ev==='reboot'||ev==='denno'||ev==='bonus');
+  var useEndscr = ((ev==='cz'&&cur.res==='f')||ev==='end');
+  var useCzscr  = false;
+  var useEdp    = (ev==='end');
+  var useEye    = ((ev==='cz'&&cur.res==='f')||ev==='end'||ev==='eyecatch');
+  var useStk    = (ev==='reboot');
   var useZinfo  = (ev==='zone'); // ztable/kill/zchance
   var useSamSt  = (ev==='cz'&&cur.cztrig==='sam');
   var useS9mep  = (ev==='s9m');
+  var useMai    = (ev==='rush');
+  var useLevel  = (ev==='hakuc'||ev==='haku');
   var e={ ev:ev };
   var g=parseInt(cur.g,10); if(!isNaN(g)&&g>0) e.g=g;
   if(useRes && cur.res) e.res=cur.res;
@@ -1084,12 +1144,15 @@ function addEntry(){
   if(useEndscr && cur.endscr) e.endscr=cur.endscr;
   if(useCzscr && cur.czscr) e.czscr=cur.czscr;
   if(useEdp && cur.edp) e.edp=cur.edp;
+  if(useEye && cur.eye) e.eye=cur.eye;
   if(useStk && cur.stk!=='') e.stk=cur.stk;
   if(useZinfo && cur.ztable) e.ztable=cur.ztable;
   if(useZinfo){ var kl=parseInt(cur.kill,10); if(!isNaN(kl)&&kl>0) e.kill=kl; }
   if(useZinfo && cur.zchance) e.zchance=cur.zchance;
   if(useSamSt && cur.samstage) e.samstage=cur.samstage;
   if(useS9mep && cur.s9mep) e.s9mep=cur.s9mep;
+  if(useMai){ var mv=parseInt(cur.mai,10); if(!isNaN(mv)&&mv>0) e.mai=mv; }
+  if(useLevel && cur.level) e.level=cur.level;
   if(cur.note) e.note=cur.note.slice(0,200);
   LOG.push(e);
 
@@ -1105,7 +1168,7 @@ function addEntry(){
   if(useCzscr && cur.czscr){ var ck=mapCzScr(cur.czscr); if(ck) incSilent(ck,1); }
   if(useEdp && cur.edp){ var ek=mapEdp(cur.edp); if(ek) incSilent(ek,1); }
 
-  cur={ev:'',g:'',res:'',cztrig:'',tachi:'',note:'',endscr:'',czscr:'',edp:'',stk:'',kill:'',ztable:'',zchance:'',samstage:'',tachipt:'',s9mep:'',sam:''};
+  cur={ev:'',g:'',res:'',cztrig:'',tachi:'',note:'',endscr:'',czscr:'',edp:'',eye:'',stk:'',kill:'',ztable:'',zchance:'',samstage:'',tachipt:'',s9mep:'',mai:'',level:'',sam:''};
   save(); render();
 }
 function incSilent(k,d){ CC[k]=Math.max(0,(CC[k]||0)+d); }
@@ -1113,7 +1176,7 @@ function incSilent(k,d){ CC[k]=Math.max(0,(CC[k]||0)+d); }
 function doReset(){
   CC={};LOG=[];inAT=false;
   try{ localStorage.removeItem(SK+'c');localStorage.removeItem(SK+'l');localStorage.removeItem(SK+'s'); }catch(e){}
-  cur={ev:'',g:'',res:'',cztrig:'',tachi:'',note:'',endscr:'',czscr:'',edp:'',stk:'',kill:'',ztable:'',zchance:'',samstage:'',tachipt:'',s9mep:'',sam:''};
+  cur={ev:'',g:'',res:'',cztrig:'',tachi:'',note:'',endscr:'',czscr:'',edp:'',eye:'',stk:'',kill:'',ztable:'',zchance:'',samstage:'',tachipt:'',s9mep:'',mai:'',level:'',sam:''};
   render();
 }
 
@@ -1127,7 +1190,7 @@ document.addEventListener('click', function(ev){
     if(cur.ev===nv){ cur.ev=''; }
     else { cur.ev=nv; }
     // イベントを切り替えたら前イベントの選択肢をクリア（混入防止。G数とメモは維持）
-    cur.res=''; cur.cztrig=''; cur.tachi=''; cur.endscr=''; cur.czscr=''; cur.edp=''; cur.stk=''; cur.kill=''; cur.ztable=''; cur.zchance=''; cur.samstage=''; cur.tachipt=''; cur.s9mep='';
+    cur.res=''; cur.cztrig=''; cur.tachi=''; cur.endscr=''; cur.czscr=''; cur.edp=''; cur.eye=''; cur.stk=''; cur.kill=''; cur.ztable=''; cur.zchance=''; cur.samstage=''; cur.tachipt=''; cur.s9mep=''; cur.mai=''; cur.level='';
     render(); return;
   }
   if(t.dataset.seg){ var g=t.dataset.seg,v=t.dataset.val; cur[g]=(cur[g]===v?'':v); render(); return; }
@@ -1135,7 +1198,7 @@ document.addEventListener('click', function(ev){
   if(t.dataset.cp){ inc(t.dataset.cp,1); return; }
   if(t.dataset.del!=null){ var i=parseInt(t.dataset.del,10); if(!isNaN(i)){ LOG.splice(i,1); save(); render(); } return; }
   if(t.dataset.a==='evchange'){
-    cur.ev=''; cur.res=''; cur.cztrig=''; cur.tachi=''; cur.endscr=''; cur.czscr=''; cur.edp=''; cur.stk=''; cur.kill=''; cur.ztable=''; cur.zchance=''; cur.samstage=''; cur.tachipt=''; cur.s9mep='';
+    cur.ev=''; cur.res=''; cur.cztrig=''; cur.tachi=''; cur.endscr=''; cur.czscr=''; cur.edp=''; cur.eye=''; cur.stk=''; cur.kill=''; cur.ztable=''; cur.zchance=''; cur.samstage=''; cur.tachipt=''; cur.s9mep=''; cur.mai=''; cur.level='';
     render(); return;
   }
   if(t.dataset.a==='add'){ addEntry(); return; }
@@ -1164,6 +1227,7 @@ document.addEventListener('input', function(ev){
   if(t.id==='iG'){ cur.g=t.value; }
   else if(t.id==='iNote'){ cur.note=t.value; }
   else if(t.id==='iKill'){ cur.kill=t.value; }
+  else if(t.id==='iMai'){ cur.mai=t.value; }
 });
 
 /* ============ 起動 ============ */
