@@ -334,9 +334,9 @@ function stats(){
 
   var czTotalN = czN + czCnt;
   var atTotalN = atTotal + atCnt;
-  // 視覚HACK：分子=HACK発生、分母=CZ失敗+S9M失敗+電脳MODE終了
+  // 視覚HACK：分子=HACK発生、分母=CZ終了後（CZ失敗）のみ
   var hackN = samVis + hackLog;
-  var hackDenom = czFail + s9mFail + dennoEnd;
+  var hackDenom = czFail;
   return {
     totG:totG,
     czN:czTotalN,
@@ -436,8 +436,11 @@ function rQS(){
   html+='<div class="qc"><span class="l">AT '+(st.atN||0)+'回</span><span class="v s">'+(st.atN&&st.totGall?('1/'+Math.round(st.totGall/st.atN)):'—')+'</span>'+(atr?'<span class="v2">≒設'+atr.best+'</span>':'')+'</div>';
   // 視覚HACK率：分子=HACK発生、分母=CZ失敗+S9M失敗+電脳MODE終了
   var hg = pctGuess(st.hackN, st.hackDenom, SIKAKU);
-  var hv = st.hackDenom? (st.hackN/st.hackDenom*100).toFixed(1)+'%' : '—';
-  html+='<div class="qc"><span class="l">視覚HACK '+st.hackN+'/'+st.hackDenom+'</span><span class="v s">'+hv+'</span>'+(hg?'<span class="v2">≒設'+hg.best+'</span>':'')+'</div>';
+  var hLabel, hv;
+  if(st.hackDenom){ hLabel='視覚HACK '+st.hackN+'/'+st.hackDenom; hv=(st.hackN/st.hackDenom*100).toFixed(1)+'%'; }
+  else if(st.hackN){ hLabel='視覚HACK 発生'+st.hackN; hv='—'; }
+  else { hLabel='視覚HACK 0/0'; hv='—'; }
+  html+='<div class="qc"><span class="l">'+hLabel+'</span><span class="v s">'+hv+'</span>'+(st.hackDenom&&hg?'<span class="v2">≒設'+hg.best+'</span>':'')+'</div>';
   $('#qs').innerHTML=html;
 }
 
@@ -719,7 +722,7 @@ function rRec(){
     h+=scrPick('アイキャッチ（ステージチェンジ）', EYECATCH, 'eye');
     h+='<div class="sub" style="margin-top:6px">※ステージチェンジ時のアイキャッチを記録。当該モードの殲滅ゾーン突入回数（ゲーム数契機）やモードDを示唆。アオイ出現時は次回殲滅ゾーンのテーブル4以上＝モードD濃厚。実戦上はCZ/AT終了時のほか、殲滅ゾーン終了後の屋上ステージ移行などで確認できます。</div>';
   }else if(cur.ev==='hack'){
-    h+='<div class="sub" style="margin-top:6px">※視覚HACK＝CZ等の失敗→終了画面の次GにアオイがリールHACK→AT。記録すると上部のHACK率の分子に+1されます。</div>';
+    h+='<div class="sub" style="margin-top:6px">※視覚HACK＝CZ（S.A.M.等）失敗→終了画面の次GにアオイがリールHACK→AT。S.A.M.視覚フラグ保有時に発生し保有率は高設定優遇。記録すると視覚HACK率（分母＝CZ終了後）の分子に+1されます。</div>';
   }else if(cur.ev==='other'){
     h+='<div class="sub" style="margin-top:6px">※自由メモ。下のメモ欄に所感・状況などを記録できます。</div>';
   }
@@ -1089,7 +1092,7 @@ function rExp(){
   if(st.tachiTry) lines.push('タチコマ家出: '+st.tachiHit+'/'+st.tachiTry+' ('+(st.tachiHit/st.tachiTry*100).toFixed(1)+'%)');
   if(st.stkTry) lines.push('引き戻しストック: '+st.stkHit+'/'+st.stkTry+' ('+(st.stkHit/st.stkTry*100).toFixed(1)+'%)');
   if(st.chouTry) lines.push('超高確スタート: '+st.chouHit+'/'+st.chouTry);
-  if(st.hackDenom) lines.push('視覚HACK率: '+st.hackN+'/'+st.hackDenom+' ('+(st.hackN/st.hackDenom*100).toFixed(1)+'%) ※分母=CZ失敗+S9M失敗+電脳MODE終了');
+  if(st.hackDenom) lines.push('視覚HACK率: '+st.hackN+'/'+st.hackDenom+' ('+(st.hackN/st.hackDenom*100).toFixed(1)+'%) ※分母=CZ終了後（CZ失敗）');
   else if(st.hackN) lines.push('視覚HACK発生: '+st.hackN+'回');
   if(cf.reasons.length){ lines.push(''); lines.push('【設定示唆】'); cf.reasons.forEach(function(r){lines.push('・'+r);}); }
   var tro=[];['tr_dou:銅','tr_gin:銀','tr_kin:金','tr_kirin:キリン','tr_niji:虹'].forEach(function(x){var p=x.split(':');if(cc(p[0]))tro.push(p[1]+'×'+cc(p[0]));});
